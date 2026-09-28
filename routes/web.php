@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\ResourceController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CustomerAuthController;
+use App\Http\Controllers\PwaController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,8 @@ Route::controller(SiteController::class)->group(function () {
     Route::post('/contact', 'sendMessage')->middleware('throttle:5,1')->name('contact.send');
     Route::get('/sitemap.xml', 'sitemap')->name('sitemap');
 });
+
+Route::get('/manifest.webmanifest', [PwaController::class, 'manifest'])->name('pwa.manifest');
 
 /*
 |--------------------------------------------------------------------------

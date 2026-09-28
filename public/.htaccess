@@ -34,3 +34,12 @@
     ExpiresByType text/css "access plus 1 week"
     ExpiresByType application/javascript "access plus 1 week"
 </IfModule>
+
+# PWA: فایل Service Worker نباید کش شود تا به‌روزرسانی‌ها سریع به کاربران برسد
+<Files "sw.js">
+    <IfModule mod_headers.c>
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Service-Worker-Allowed "/"
+    </IfModule>
+</Files>
+AddType application/manifest+json .webmanifest

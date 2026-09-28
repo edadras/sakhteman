@@ -63,23 +63,60 @@
                     <span class="cart-count" data-count="{{ $cartCount }}">{{ fa_num($cartCount) }}</span>
                 </a>
             @endif
-            <button class="burger" id="burger" type="button" aria-label="منو" aria-expanded="false" aria-controls="menuOverlay">
+            <button class="burger js-menu-toggle" id="burger" type="button" aria-label="منو" aria-expanded="false" aria-controls="menuOverlay">
                 <span></span><span></span><span></span>
             </button>
         </div>
     </div>
 </header>
 
-<div class="menu-overlay grid-bg" id="menuOverlay">
-    <div class="container">
+<div class="menu-overlay grid-bg" id="menuOverlay" aria-hidden="true">
+    <div class="container menu-overlay__inner">
+        <div class="menu-overlay__user">
+            @auth
+                <span class="menu-overlay__avatar">{{ mb_substr(auth()->user()->name, 0, 1) }}</span>
+                <div>
+                    <strong>{{ auth()->user()->name }}</strong>
+                    <a href="{{ auth()->user()->is_admin ? route('admin.dashboard') : route('account') }}">{{ auth()->user()->is_admin ? 'پنل مدیریت' : 'حساب کاربری من' }} <i class="ri-arrow-left-s-line"></i></a>
+                </div>
+            @else
+                <span class="menu-overlay__avatar"><i class="ri-user-3-line"></i></span>
+                <div>
+                    <strong>خوش آمدید</strong>
+                    <span><a href="{{ route('login') }}">ورود</a> / <a href="{{ route('register') }}">عضویت</a></span>
+                </div>
+            @endauth
+        </div>
+
         <ul class="menu-overlay__links">
             @foreach ($nav as $i => $item)
-                <li><a href="{{ route($item['route']) }}"><small>{{ fa_num(str_pad($i + 1, 2, '0', STR_PAD_LEFT)) }}</small>{{ $item['label'] }}</a></li>
+                @php $hasChildren = ! empty($item['children']) && $item['children']->count(); @endphp
+                <li class="{{ request()->routeIs($item['match']) ? 'is-current' : '' }}">
+                    <div class="menu-overlay__row">
+                        <a href="{{ route($item['route']) }}"><small>{{ fa_num(str_pad($i + 1, 2, '0', STR_PAD_LEFT)) }}</small>{{ $item['label'] }}</a>
+                        @if ($hasChildren)
+                            <button type="button" class="menu-overlay__sub-toggle" aria-label="زیرمنو {{ $item['label'] }}" aria-expanded="false"><i class="ri-add-line"></i></button>
+                        @endif
+                    </div>
+                    @if ($hasChildren)
+                        <div class="menu-overlay__sub">
+                            @foreach ($item['children'] as $child)
+                                <a href="{{ route('services.show', $child->slug) }}"><i class="{{ $child->icon ?: 'ri-checkbox-blank-circle-line' }}"></i>{{ $child->title }}</a>
+                            @endforeach
+                        </div>
+                    @endif
+                </li>
             @endforeach
         </ul>
+
+        <div class="menu-overlay__actions">
+            <a href="{{ route('contact') }}" class="btn">درخواست مشاوره <i class="ri-customer-service-2-line"></i></a>
+            <button type="button" class="btn btn--ghost js-install" hidden>نصب اپلیکیشن <i class="ri-download-2-line"></i></button>
+        </div>
+
         <div class="menu-overlay__info">
-            @if (setting('phone'))<a href="tel:{{ preg_replace('/[^\d+]/', '', en_num(setting('phone'))) }}" class="ltr" style="text-align:right">{{ fa_num(setting('phone')) }}</a>@endif
-            @if (setting('email'))<a href="mailto:{{ setting('email') }}">{{ setting('email') }}</a>@endif
+            @if (setting('phone'))<a href="tel:{{ preg_replace('/[^\d+]/', '', en_num(setting('phone'))) }}"><i class="ri-phone-line"></i><span class="ltr">{{ fa_num(setting('phone')) }}</span></a>@endif
+            @if (setting('email'))<a href="mailto:{{ setting('email') }}"><i class="ri-mail-line"></i>{{ setting('email') }}</a>@endif
             @include('partials.social')
         </div>
     </div>

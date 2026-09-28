@@ -8,12 +8,19 @@
 <html lang="fa" dir="rtl" class="is-loading">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $pageTitle ? $pageTitle.' | '.$siteTitle : $siteTitle.' | '.setting('site_tagline') }}</title>
     <meta name="description" content="{{ $metaDescription }}">
     <meta name="keywords" content="{{ setting('meta_keywords') }}">
     <meta name="theme-color" content="#0e1e21">
+    <link rel="manifest" href="{{ route('pwa.manifest') }}">
+    <link rel="apple-touch-icon" href="{{ asset('assets/pwa/apple-touch-icon.png') }}">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="{{ \Illuminate\Support\Str::of($siteTitle)->explode(' ')->last() }}">
+    <meta name="format-detection" content="telephone=no">
     <link rel="canonical" href="{{ url()->current() }}">
 
     <meta property="og:type" content="website">
@@ -29,6 +36,7 @@
         <link rel="icon" href="{{ media_url(setting('favicon')) }}">
     @else
         <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/pwa/favicon-32.png') }}">
     @endif
     <link rel="stylesheet" href="{{ asset('assets/fonts/vazirmatn/vazirmatn.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendor/remixicon/remixicon.css') }}">
@@ -80,6 +88,7 @@
     </main>
 
     @include('partials.footer')
+    @include('partials.bottom-nav')
 
     {{-- دکمه‌های شناور --}}
     <button class="to-top" type="button" aria-label="بازگشت به بالا">

@@ -215,18 +215,31 @@
         window.addEventListener('scroll', onScroll, { passive: true });
         onScroll();
 
-        if (burger && overlay) {
+        if (overlay) {
+            const toggles = $$('.js-menu-toggle');
             const toggle = (state) => {
                 menuOpen = state ?? !menuOpen;
-                burger.classList.toggle('is-open', menuOpen);
+                toggles.forEach((t) => { t.classList.toggle('is-open', menuOpen); t.setAttribute('aria-expanded', menuOpen); });
                 overlay.classList.toggle('is-open', menuOpen);
-                burger.setAttribute('aria-expanded', menuOpen);
+                overlay.setAttribute('aria-hidden', !menuOpen);
+                document.body.classList.toggle('menu-open', menuOpen);
                 if (lenis) menuOpen ? lenis.stop() : lenis.start();
                 document.body.style.overflow = menuOpen ? 'hidden' : '';
+                if (menuOpen) header && header.classList.remove('is-hidden');
             };
-            burger.addEventListener('click', () => toggle());
+            toggles.forEach((t) => t.addEventListener('click', () => toggle()));
             $$('a', overlay).forEach((a) => a.addEventListener('click', () => toggle(false)));
             document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menuOpen) toggle(false); });
+            // زیرمنو (آکاردئون) در منوی همبرگری
+            $$('.menu-overlay__sub-toggle', overlay).forEach((btn) => btn.addEventListener('click', () => {
+                const li = btn.closest('li');
+                const sub = $('.menu-overlay__sub', li);
+                const open = !li.classList.contains('sub-open');
+                li.classList.toggle('sub-open', open);
+                btn.setAttribute('aria-expanded', open);
+                sub.style.maxHeight = open ? sub.scrollHeight + 'px' : '0px';
+            }));
+            window.addEventListener('resize', () => { if (window.innerWidth > 1400 && menuOpen) toggle(false); });
         }
 
         // لینک‌های لنگر داخل صفحه
@@ -947,12 +960,73 @@
         });
     }
 
+
+    /* ---------------------------------------------------------------
+       PWA: ثبت Service Worker و پیشنهاد نصب اپلیکیشن
+    --------------------------------------------------------------- */
+    function initPwa() {
+        if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {}));
+        }
+
+        const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        if (standalone) document.documentElement.classList.add('is-standalone');
+
+        const banner = $('#installBanner');
+        const installButtons = [$('#installBtn'), ...$$('.js-install')].filter(Boolean);
+        let deferred = null;
+        const dismissed = () => { try { return Number(localStorage.getItem('installDismissed') || 0) > Date.now(); } catch (e) { return false; } };
+        const showBanner = () => {
+            if (!banner || standalone || dismissed()) return;
+            banner.hidden = false;
+            requestAnimationFrame(() => banner.classList.add('is-visible'));
+        };
+        const hideBanner = (days) => {
+            if (!banner) return;
+            banner.classList.remove('is-visible');
+            setTimeout(() => { banner.hidden = true; }, 500);
+            if (days) try { localStorage.setItem('installDismissed', String(Date.now() + days * 864e5)); } catch (e) {}
+        };
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferred = e;
+            $$('.js-install').forEach((b) => { b.hidden = false; });
+            setTimeout(showBanner, 6000);
+        });
+
+        installButtons.forEach((btn) => btn.addEventListener('click', async () => {
+            if (deferred) {
+                deferred.prompt();
+                const choice = await deferred.userChoice.catch(() => null);
+                deferred = null;
+                hideBanner(choice && choice.outcome === 'accepted' ? 365 : 14);
+            } else if (isIos) {
+                toast('در سافاری، دکمه «اشتراک‌گذاری» و سپس «Add to Home Screen» را بزنید.');
+            }
+        }));
+        const close = $('#installClose');
+        if (close) close.addEventListener('click', () => hideBanner(14));
+        window.addEventListener('appinstalled', () => { hideBanner(365); toast('اپلیکیشن با موفقیت نصب شد.'); });
+
+        // آیفون: راهنمای افزودن به صفحه اصلی
+        const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+        if (isIos && !standalone) {
+            const hint = banner && $('[data-install-hint]', banner);
+            if (hint) hint.innerHTML = 'دکمه <i class="ri-share-box-line"></i> و سپس «Add to Home Screen» را بزنید';
+            $$('.js-install').forEach((b) => { b.hidden = false; });
+            const btn = $('#installBtn'); if (btn) btn.textContent = 'راهنما';
+            setTimeout(showBanner, 8000);
+        }
+    }
+
     /* ---------------------------------------------------------------
        اجرا
     --------------------------------------------------------------- */
     initPageTransition();
     initCursor();
     initHeader();
+    initPwa();
     initHero();
     initBlueprint();
     initGridSpot();

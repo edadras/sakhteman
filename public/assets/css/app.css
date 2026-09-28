@@ -959,3 +959,123 @@ html:not(.is-loading) .preloader { display: none; }
 }
 .auth-form .field input { background: #fff; box-shadow: 0 6px 18px rgba(23, 48, 56, .04); }
 .widget.grid-bg { background: var(--teal-900); }
+
+/* ==========================================================================
+   منوی همبرگری (کشویی)
+   ========================================================================== */
+.menu-overlay { justify-content: flex-start; padding: calc(var(--header-h) + 20px) 0 40px; }
+.menu-overlay__inner { max-width: 760px; }
+.menu-overlay__user { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 20px; background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .06); margin-bottom: 18px; opacity: 0; transform: translateY(20px); transition: .6s var(--ease) .15s; }
+.menu-overlay.is-open .menu-overlay__user { opacity: 1; transform: none; }
+.menu-overlay__avatar { width: 52px; height: 52px; border-radius: 16px; background: var(--amber); color: var(--ink); display: grid; place-items: center; font-weight: 900; font-size: 22px; flex-shrink: 0; }
+.menu-overlay__user strong { display: block; font-size: 17px; }
+.menu-overlay__user a { color: var(--amber); font-weight: 700; }
+.menu-overlay__user span { color: var(--muted); }
+.menu-overlay__links li { border-bottom: 1px solid rgba(255, 255, 255, .06); }
+.menu-overlay__row { display: flex; align-items: center; justify-content: space-between; gap: 10px; overflow: hidden; }
+.menu-overlay__links a { font-size: clamp(24px, 6.4vw, 46px); line-height: 1.9; }
+.menu-overlay__links li.is-current > .menu-overlay__row > a { color: var(--amber); }
+.menu-overlay__sub-toggle { flex-shrink: 0; width: 44px; height: 44px; border-radius: 14px; background: rgba(255, 255, 255, .06); color: #fff; font-size: 22px; display: grid; place-items: center; transition: transform .4s var(--ease), background .3s; }
+.menu-overlay li.sub-open .menu-overlay__sub-toggle { transform: rotate(45deg); background: var(--amber); color: var(--ink); }
+.menu-overlay__sub { max-height: 0; overflow: hidden; transition: max-height .5s var(--ease); display: grid; }
+.menu-overlay__sub a { display: flex; align-items: center; gap: 10px; font-size: 16px; line-height: 1.6; font-weight: 600; padding: 10px 6px; color: rgba(255, 255, 255, .8); transform: none; }
+.menu-overlay__sub a:last-child { margin-bottom: 12px; }
+.menu-overlay__sub a i { color: var(--green-2); font-size: 18px; }
+.menu-overlay__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; opacity: 0; transform: translateY(20px); transition: .6s var(--ease) .45s; }
+.menu-overlay.is-open .menu-overlay__actions { opacity: 1; transform: none; }
+.menu-overlay__actions .btn { flex: 1 1 200px; }
+.menu-overlay__info a { display: inline-flex; align-items: center; gap: 8px; }
+.menu-overlay__info i { color: var(--green-2); }
+.menu-overlay__info .social { margin-top: 8px; }
+body.menu-open .whatsapp-float, body.menu-open .to-top { opacity: 0; visibility: hidden; }
+
+/* ==========================================================================
+   نوار ناوبری پایین (موبایل)
+   ========================================================================== */
+.bottom-nav { display: none; }
+@media (max-width: 991px) {
+    body { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+    .bottom-nav {
+        position: fixed; z-index: 120; inset-inline: 10px; bottom: calc(10px + env(safe-area-inset-bottom));
+        display: grid; grid-template-columns: repeat(5, 1fr); align-items: end; height: 66px; padding: 0 6px;
+        border-radius: 22px; background: rgba(255, 255, 255, .92);
+        -webkit-backdrop-filter: blur(18px) saturate(180%); backdrop-filter: blur(18px) saturate(180%);
+        box-shadow: 0 12px 40px rgba(10, 23, 26, .18), 0 0 0 1px rgba(23, 48, 56, .05);
+        transition: transform .5s var(--ease);
+    }
+    .bottom-nav > a, .bottom-nav > button {
+        position: relative; height: 66px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+        color: var(--muted); font-size: 11.5px; font-weight: 700; -webkit-tap-highlight-color: transparent;
+    }
+    .bottom-nav > a > i, .bottom-nav__icon > i { font-size: 23px; line-height: 1; }
+    .bottom-nav i[class$="-fill"] { display: none; }
+    .bottom-nav .is-active { color: var(--ink); }
+    .bottom-nav .is-active i[class$="-line"] { display: none; }
+    .bottom-nav .is-active i[class$="-fill"] { display: inline-block; color: var(--green); }
+    .bottom-nav > a.is-active::after { content: ""; position: absolute; top: 6px; width: 5px; height: 5px; border-radius: 50%; background: var(--amber); }
+    .bottom-nav__icon { position: relative; line-height: 1; }
+    .bottom-nav__icon .cart-count { top: -8px; inset-inline-end: -12px; }
+    .bottom-nav__main { justify-content: flex-end !important; padding-bottom: 8px; color: var(--ink) !important; }
+    .bottom-nav__main::after { display: none; }
+    .bottom-nav__fab {
+        position: absolute; top: -22px; left: 50%; margin-left: -29px; width: 58px; height: 58px; border-radius: 20px;
+        display: grid; place-items: center; font-size: 26px; background: var(--amber); color: var(--ink);
+        box-shadow: 0 10px 24px rgba(251, 177, 46, .45), 0 0 0 6px var(--bg); transform: rotate(45deg); transition: transform .5s var(--ease);
+    }
+    .bottom-nav__fab i { transform: rotate(-45deg); }
+    .bottom-nav__main:active .bottom-nav__fab, .bottom-nav__main.is-active .bottom-nav__fab { transform: rotate(45deg) scale(.94); background: var(--ink); color: var(--amber); }
+    .bottom-nav__burger { width: 24px; height: 23px; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+    .bottom-nav__burger span { height: 2.5px; border-radius: 2px; background: currentColor; transition: .45s var(--ease); }
+    .bottom-nav__burger span:nth-child(2) { width: 70%; margin-inline-start: auto; }
+    .bottom-nav button.is-open { color: var(--ink); }
+    .bottom-nav button.is-open .bottom-nav__burger span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .bottom-nav button.is-open .bottom-nav__burger span:nth-child(2) { opacity: 0; }
+    .bottom-nav button.is-open .bottom-nav__burger span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+    body.menu-open .bottom-nav { background: rgba(255, 255, 255, .98); }
+
+    .whatsapp-float { bottom: calc(92px + env(safe-area-inset-bottom)); }
+    .to-top { bottom: calc(92px + env(safe-area-inset-bottom)); }
+    .site-toast { top: auto; bottom: calc(96px + env(safe-area-inset-bottom)); transform: translate(-50%, 30px); }
+    .site-toast.is-visible { transform: translate(-50%, 0); }
+    .scroll-indicator { display: none; }
+    /* در موبایل منوی همبرگری هدر حذف و از نوار پایین استفاده می‌شود */
+    .site-header .burger { display: none; }
+    .menu-overlay { padding-bottom: calc(110px + env(safe-area-inset-bottom)); }
+}
+
+/* پیشنهاد نصب اپلیکیشن */
+.install-banner {
+    position: fixed; z-index: 130; inset-inline: 12px; bottom: calc(88px + env(safe-area-inset-bottom));
+    display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 20px;
+    background: var(--teal-900); color: #fff; box-shadow: 0 20px 50px rgba(10, 23, 26, .35);
+    transform: translateY(30px); opacity: 0; transition: .5s var(--ease); max-width: 520px; margin-inline: auto;
+}
+.install-banner.is-visible { transform: none; opacity: 1; }
+.install-banner img { width: 48px; height: 48px; border-radius: 14px; flex-shrink: 0; }
+.install-banner__text { flex: 1; min-width: 0; line-height: 1.6; }
+.install-banner__text strong { display: block; font-size: 15px; }
+.install-banner__text span { color: var(--muted); font-size: 12.5px; }
+.install-banner .btn { height: 42px; padding: 0 18px; flex-shrink: 0; }
+.install-banner__close { width: 32px; height: 32px; border-radius: 10px; color: var(--muted); font-size: 20px; display: grid; place-items: center; flex-shrink: 0; }
+@media (min-width: 992px) { .install-banner { bottom: 26px; inset-inline-start: auto; inset-inline-end: 100px; } }
+
+/* نسخه نصب‌شده (standalone) و ناحیه امن آیفون */
+.site-header { padding-top: env(safe-area-inset-top); height: calc(var(--header-h) + env(safe-area-inset-top)); }
+.site-header.is-scrolled { height: calc(84px + env(safe-area-inset-top)); }
+.is-standalone .whatsapp-float { display: none; }
+.container { padding-inline: max(24px, env(safe-area-inset-left)) max(24px, env(safe-area-inset-right)); }
+@media (max-width: 767px) { .container { padding-inline: max(18px, env(safe-area-inset-left)) max(18px, env(safe-area-inset-right)); } }
+/* ناحیه لمس بزرگ‌تر در موبایل */
+.hero-dots button::before { content: ""; position: absolute; inset: -14px -6px; }
+.hero-dots button { overflow: visible; }
+.hero-dots button.is-active { overflow: hidden; }
+.auth-pill { padding: 0 12px; }
+.auth-pill a { display: flex; align-items: center; min-height: 44px; padding: 0 10px; }
+@media (max-width: 991px) { .bottom-nav .bottom-nav__fab i { display: inline-block !important; color: inherit !important; } }
+.hero-diamond { width: min(92%, 440px); margin-left: calc(min(92%, 440px) / -2); }
+@media (max-width: 767px) {
+    .hero-designer { display: inline-grid; grid-template-columns: auto auto; column-gap: 14px; row-gap: 0; align-items: center; line-height: 1.5; }
+    .hero-designer img { grid-row: span 2; }
+    .hero-designer strong { font-size: 17px; white-space: nowrap; }
+    .hero-designer span { font-size: 13px; white-space: nowrap; }
+}
