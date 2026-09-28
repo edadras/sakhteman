@@ -117,8 +117,27 @@
 </section>
 @endif
 
+{{-- ============ قبل و بعد ============ --}}
+@if ($showcase)
+<section class="section showcase-section">
+    <div class="container">
+        @include('partials.sec-head', ['title' => 'از نقشه تا واقعیت', 'en' => 'Before & after', 'icon' => 'ri-contrast-2-line', 'button' => ['مشاهده این پروژه', $showcase->url]])
+        <div data-reveal="scale">
+            @include('partials.before-after', ['before' => media_url($showcase->before_image), 'after' => media_url($showcase->cover), 'alt' => $showcase->title])
+        </div>
+        <p class="showcase-caption" data-reveal><i class="ri-drag-move-line"></i> خط وسط را بکشید — <strong>{{ $showcase->title }}</strong>، {{ $showcase->location }}</p>
+    </div>
+</section>
+@endif
+
 {{-- ============ تایم‌لاین ============ --}}
 @include('partials.timeline')
+
+{{-- ============ سه بعدی ============ --}}
+@include('partials.three-d')
+
+{{-- ============ ماشین‌حساب هزینه ============ --}}
+@include('partials.calculator')
 
 {{-- ============ محصولات ============ --}}
 @if ($products->count())

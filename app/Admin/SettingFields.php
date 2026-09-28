@@ -84,6 +84,20 @@ class SettingFields
                     'shop_enabled' => ['label' => 'نمایش فروشگاه و سبد خرید در سایت', 'type' => 'select', 'options' => ['1' => 'فعال', '0' => 'غیرفعال'], 'rules' => 'required', 'col' => 'third'],
                 ],
             ],
+            'calculator' => [
+                'label' => 'ماشین‌حساب هزینه',
+                'icon' => 'ri-calculator-line',
+                'fields' => [
+                    'calc_enabled' => ['label' => 'نمایش ماشین‌حساب در سایت', 'type' => 'select', 'options' => ['1' => 'فعال', '0' => 'غیرفعال'], 'col' => 'third'],
+                    'calc_price_economy' => ['label' => 'هزینه ساخت هر متر - اقتصادی (تومان)', 'type' => 'text', 'col' => 'third', 'dir' => 'ltr'],
+                    'calc_price_standard' => ['label' => 'هزینه ساخت هر متر - استاندارد (تومان)', 'type' => 'text', 'col' => 'third', 'dir' => 'ltr'],
+                    'calc_price_luxury' => ['label' => 'هزینه ساخت هر متر - لوکس (تومان)', 'type' => 'text', 'col' => 'third', 'dir' => 'ltr'],
+                    'calc_steel_factor' => ['label' => 'ضریب اسکلت فلزی نسبت به بتنی (مثلا 1.08)', 'type' => 'text', 'col' => 'third', 'dir' => 'ltr'],
+                    'calc_floor_factor' => ['label' => 'افزایش هزینه به ازای هر طبقه بالاتر از ۴ (درصد)', 'type' => 'text', 'col' => 'third', 'dir' => 'ltr'],
+                    'calc_basement_factor' => ['label' => 'افزایش هزینه زیرزمین/پارکینگ (درصد)', 'type' => 'text', 'col' => 'third', 'dir' => 'ltr'],
+                    'calc_note' => ['label' => 'توضیح زیر نتیجه', 'type' => 'textarea'],
+                ],
+            ],
             'about' => [
                 'label' => 'صفحه درباره ما',
                 'icon' => 'ri-information-line',

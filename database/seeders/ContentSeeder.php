@@ -91,6 +91,14 @@ class ContentSeeder extends Seeder
             'team_button_text' => 'فرصت‌های همکاری',
             'team_button_link' => '/contact',
             'shop_enabled' => '1',
+            'calc_enabled' => '1',
+            'calc_price_economy' => '18000000',
+            'calc_price_standard' => '26000000',
+            'calc_price_luxury' => '42000000',
+            'calc_steel_factor' => '1.08',
+            'calc_floor_factor' => '1.5',
+            'calc_basement_factor' => '9',
+            'calc_note' => 'این عدد تخمینی و بر اساس میانگین قیمت‌های روز است. برای برآورد دقیق، کارشناسان ما پس از بازدید قیمت نهایی را اعلام می‌کنند.',
         ];
 
         foreach ($settings as $key => $value) {
@@ -165,8 +173,15 @@ class ContentSeeder extends Seeder
 
         $gallery = ['p1', 'p2', 'p5', 'p6', 'hero-1'];
 
+        $showcase = ['برج مسکونی الهیه' => [35.7925, 51.423, "p1", "p1"], 'ویلای مدرن لواسان' => [35.823, 51.633, "p2", "p2"], 'مجتمع تجاری آفتاب' => [35.8327, 50.9915, null, null], 'ساختمان اداری نگین' => [35.7575, 51.409, null, "p4"], 'پنت‌هاوس زعفرانیه' => [35.804, 51.413, "p5", null], 'بازسازی آپارتمان سعادت‌آباد' => [35.781, 51.378, "p6", null], 'برج اداری تجاری پارس' => [29.636, 52.504, null, null], 'مجموعه ویلایی نوشهر' => [36.648, 51.496, "hero-3", null]];
+
         foreach ($projects as $i => $p) {
+            [$lat, $lng, $before, $video] = $showcase[$p['title']] ?? [null, null, null, null];
             Project::create([
+                'lat' => $lat,
+                'lng' => $lng,
+                'before_image' => $before ? 'assets/img/demo/before-'.$before.'.jpg' : null,
+                'video' => $video ? 'assets/img/demo/vid-'.$video.'.mp4' : null,
                 'category_id' => $cats[$p['cat']],
                 'title' => $p['title'],
                 'slug' => persian_slug($p['title']),

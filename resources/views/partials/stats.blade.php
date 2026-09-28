@@ -9,6 +9,7 @@
                         <div class="stat__value"><span data-counter="{{ $stat->value }}">{{ fa_num($stat->value) }}</span><span class="text-amber">{{ $stat->suffix }}</span></div>
                         <div class="stat__label">{{ $stat->title }}</div>
                     </div>
+                    <span class="stat__ruler" aria-hidden="true"></span>
                 </div>
             @endforeach
         </div>

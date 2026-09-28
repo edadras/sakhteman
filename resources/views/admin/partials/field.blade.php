@@ -36,16 +36,17 @@
 
         @case('file')
             <div class="upload">
-                <div class="upload__preview"><i class="ri-file-pdf-2-line"></i></div>
+                @php $isVideo = str_contains($field['accept'] ?? '', 'video'); @endphp
+                <div class="upload__preview"><i class="{{ $isVideo ? 'ri-film-line' : 'ri-file-pdf-2-line' }}"></i></div>
                 <div class="upload__body">
                     <strong><i class="ri-upload-cloud-2-line"></i> انتخاب فایل</strong>
-                    <small>PDF، ZIP یا تصویر — حداکثر ۳۰ مگابایت</small>
+                    <small>{{ $isVideo ? 'ویدیو MP4 یا WebM — حداکثر ۲۰ مگابایت' : 'PDF، ZIP یا تصویر — حداکثر ۳۰ مگابایت' }}</small>
                     @if ($value)
                         <a href="{{ media_url($value) }}" target="_blank" class="upload__remove" style="color:var(--a-primary)"><i class="ri-download-line"></i> مشاهده فایل فعلی</a>
                         <label class="upload__remove"><input type="checkbox" name="{{ $name }}_remove" value="1"> حذف فایل فعلی</label>
                     @endif
                 </div>
-                <input type="file" id="{{ $id }}" name="{{ $name }}">
+                <input type="file" id="{{ $id }}" name="{{ $name }}" @if (! empty($field['accept'])) accept="{{ $field['accept'] }}" @endif>
             </div>
             @break
 

@@ -5,6 +5,10 @@
     <div class="card-top">
         <div class="project-card__media">
             <img src="{{ media_url($project->cover) }}" alt="{{ $project->title }}" loading="lazy">
+            @if ($project->video)
+                <video class="card-video" data-src="{{ media_url($project->video) }}" muted loop playsinline preload="none" aria-hidden="true"></video>
+                <span class="card-video__badge"><i class="ri-play-fill"></i></span>
+            @endif
         </div>
         <span class="badge {{ $badge }} card-top__badge">{{ $project->status_label }}</span>
     </div>

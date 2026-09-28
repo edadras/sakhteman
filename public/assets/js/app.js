@@ -36,6 +36,31 @@
             requestAnimationFrame(raf);
         }
     }
+    // لرزش کوتاه گوشی (اندروید) برای بازخورد لمسی
+    const haptic = (pattern = 12) => { try { if (!reduced && navigator.vibrate) navigator.vibrate(pattern); } catch (e) {} };
+
+    // تشخیص کشیدن انگشت روی یک عنصر: onMove(dx, dy) و onEnd(dx, dy, velocity)
+    function onSwipe(el, { onMove, onEnd, ignore } = {}) {
+        let sx = 0, sy = 0, st = 0, active = false, axis = null;
+        el.addEventListener('touchstart', (e) => {
+            if (e.touches.length !== 1 || (ignore && ignore(e))) return;
+            sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); active = true; axis = null;
+        }, { passive: true });
+        el.addEventListener('touchmove', (e) => {
+            if (!active) return;
+            const dx = e.touches[0].clientX - sx, dy = e.touches[0].clientY - sy;
+            if (!axis && Math.hypot(dx, dy) > 10) axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+            if (axis && onMove) onMove(dx, dy, axis);
+        }, { passive: true });
+        el.addEventListener('touchend', (e) => {
+            if (!active) return;
+            active = false;
+            const t = e.changedTouches[0];
+            const dx = t.clientX - sx, dy = t.clientY - sy;
+            onEnd && onEnd(dx, dy, axis, Math.hypot(dx, dy) / Math.max(1, Date.now() - st));
+        });
+    }
+
     const scrollToY = (y) => (lenis ? lenis.scrollTo(y, { duration: 1.6 }) : window.scrollTo({ top: y, behavior: 'smooth' }));
 
     /* ---------------------------------------------------------------
@@ -81,7 +106,9 @@
 
         const countEl = $('.preloader__count', pre);
         const bar = $('.preloader__bar span', pre);
-        const fast = sessionStorage.getItem('visited') === '1';
+        const standaloneApp = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        const fast = sessionStorage.getItem('visited') === '1' && !(standaloneApp && !sessionStorage.getItem('splashDone'));
+        if (standaloneApp) sessionStorage.setItem('splashDone', '1');
         sessionStorage.setItem('visited', '1');
         const duration = fast ? 500 : 1700;
         let done = false;
@@ -121,10 +148,17 @@
     function initPageTransition() {
         const pt = $('.page-transition');
         if (!pt || !hasGsap || reduced) return;
-        const panels = $$('span', pt);
+        const panels = $$(':scope > span', pt);
+        const logo = $('.pt-logo', pt);
+        const logoPaths = logo ? $$('path', logo) : [];
 
         gsap.set(panels, { scaleY: 1, transformOrigin: 'bottom' });
-        gsap.to(panels, { scaleY: 0, duration: .8, ease: 'power4.inOut', stagger: .08, delay: .05 });
+        if (logo && sessionStorage.getItem('pt') === '1') {
+            gsap.set(logo, { opacity: 1, y: 0 });
+            gsap.to(logo, { y: -60, opacity: 0, duration: .5, ease: 'power3.in' });
+        }
+        sessionStorage.removeItem('pt');
+        gsap.to(panels, { scaleY: 0, duration: .8, ease: 'power4.inOut', stagger: .08, delay: .15 });
 
         document.addEventListener('click', (e) => {
             const a = e.target.closest('a');
@@ -137,11 +171,16 @@
             if (url.pathname === location.pathname && url.hash) return;
             e.preventDefault();
             gsap.set(panels, { transformOrigin: 'top' });
-            gsap.to(panels, { scaleY: 1, duration: .6, ease: 'power4.inOut', stagger: .06, onComplete: () => { location.href = a.href; } });
+            const tl = gsap.timeline({ onComplete: () => { try { sessionStorage.setItem('pt', '1'); } catch (err) {} location.href = a.href; } });
+            tl.to(panels, { scaleY: 1, duration: .6, ease: 'power4.inOut', stagger: .06 });
+            if (logo) {
+                tl.fromTo(logo, { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: .45, ease: 'power3.out' }, '-=.25')
+                  .fromTo(logoPaths, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: .35, stagger: .07, ease: 'back.out(2)' }, '<');
+            }
         });
 
         window.addEventListener('pageshow', (e) => {
-            if (e.persisted) gsap.set(panels, { scaleY: 0 });
+            if (e.persisted) { gsap.set(panels, { scaleY: 0 }); if (logo) gsap.set(logo, { opacity: 0 }); }
         });
     }
 
@@ -198,6 +237,7 @@
     --------------------------------------------------------------- */
     function initHeader() {
         const header = $('#siteHeader');
+        const cursorEls = $$('.cursor, .cursor-dot');
         const burger = $('#burger');
         const overlay = $('#menuOverlay');
         let lastY = 0;
@@ -207,6 +247,11 @@
             const y = window.scrollY;
             if (!header) return;
             header.classList.toggle('is-scrolled', y > 40 || document.body.classList.contains('header-solid'));
+            // رنگ هدر بر اساس رنگ بخشی که زیر آن قرار دارد
+            const probe = document.elementFromPoint(window.innerWidth / 2, header.offsetHeight + 4);
+            const dark = !!(probe && probe.closest('.grid-bg, .project-hero, [data-header="dark"]'));
+            header.classList.toggle('on-dark', dark);
+            if (cursorEls) cursorEls.forEach((c) => c.classList.toggle('on-light', !dark && y > 40));
             const delta = y - lastY;
             if (Math.abs(delta) < 8) return;
             header.classList.toggle('is-hidden', !menuOpen && delta > 0 && y > 400);
@@ -227,7 +272,17 @@
                 document.body.style.overflow = menuOpen ? 'hidden' : '';
                 if (menuOpen) header && header.classList.remove('is-hidden');
             };
-            toggles.forEach((t) => t.addEventListener('click', () => toggle()));
+            toggles.forEach((t) => t.addEventListener('click', () => { haptic(10); toggle(); }));
+            // کشیدن منو به پایین (یا به سمت راست) برای بستن
+            onSwipe(overlay, {
+                ignore: () => overlay.scrollTop > 5,
+                onMove: (dx, dy, axis) => { if (hasGsap && axis === 'y' && dy > 0) gsap.set(overlay, { y: dy * .6 }); },
+                onEnd: (dx, dy, axis, v) => {
+                    const shouldClose = (axis === 'y' && (dy > 110 || (dy > 40 && v > .6))) || (axis === 'x' && dx > 110);
+                    if (hasGsap) gsap.to(overlay, { y: 0, duration: .35, ease: 'power3.out' });
+                    if (shouldClose) { haptic(10); toggle(false); }
+                },
+            });
             $$('a', overlay).forEach((a) => a.addEventListener('click', () => toggle(false)));
             document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menuOpen) toggle(false); });
             // زیرمنو (آکاردئون) در منوی همبرگری
@@ -388,6 +443,7 @@
                 });
                 const data = await res.json().catch(() => ({}));
                 if (!res.ok) throw new Error(data.message || 'خطا در افزودن به سبد خرید');
+                haptic([10, 40, 18]);
                 const card = form.closest('.product-card');
                 flyToCart(card ? $('.product-card__media img', card) : $('#pdMain'));
                 setTimeout(() => {
@@ -417,6 +473,7 @@
             try { localStorage.setItem('favs', JSON.stringify(favs)); } catch (err) {}
             sync();
             $('i', btn).className = btn.classList.contains('is-active') ? 'ri-heart-3-fill' : 'ri-heart-3-line';
+            haptic(12);
             if (hasGsap) gsap.fromTo(btn, { scale: .6 }, { scale: 1, duration: .6, ease: 'elastic.out(1,.4)' });
             toast(btn.classList.contains('is-active') ? 'به علاقه‌مندی‌ها اضافه شد' : 'از علاقه‌مندی‌ها حذف شد');
         });
@@ -622,15 +679,36 @@
             });
         });
 
-        // شمارنده‌ها
+        // شمارنده‌ها به شکل کیلومترشمار + خط‌کش مهندسی
+        const FA = '۰۱۲۳۴۵۶۷۸۹';
         $$('[data-counter]').forEach((el) => {
-            const target = parseFloat(el.dataset.counter) || 0;
-            const obj = { v: 0 };
-            el.textContent = faDigits(0);
-            gsap.to(obj, {
-                v: target, duration: 2.4, ease: 'power2.out',
-                scrollTrigger: { trigger: el, start: 'top 90%' },
-                onUpdate: () => { el.textContent = faDigits(Math.round(obj.v).toLocaleString('en-US').replace(/,/g, '٬')); },
+            const target = Math.round(parseFloat(el.dataset.counter) || 0);
+            const text = target.toLocaleString('en-US');
+            el.innerHTML = '';
+            el.setAttribute('aria-label', faDigits(text));
+            const odo = document.createElement('span');
+            odo.className = 'odo';
+            odo.setAttribute('aria-hidden', 'true');
+            const cols = [];
+            [...text].forEach((ch) => {
+                if (ch === ',') { const sep = document.createElement('span'); sep.className = 'odo__sep'; sep.textContent = '٬'; odo.appendChild(sep); return; }
+                const col = document.createElement('span');
+                col.className = 'odo__col';
+                // دو دور کامل برای حس چرخش
+                col.innerHTML = [...Array(20).keys()].map((n) => `<span>${FA[n % 10]}</span>`).join('') + `<span>${FA[+ch]}</span>`;
+                odo.appendChild(col);
+                cols.push(col);
+            });
+            el.appendChild(odo);
+            const ruler = el.closest('.stat') && $('.stat__ruler', el.closest('.stat'));
+            ScrollTrigger.create({
+                trigger: el, start: 'top 90%', once: true,
+                onEnter: () => {
+                    cols.forEach((col, i) => {
+                        gsap.fromTo(col, { yPercent: 0 }, { yPercent: -(20 / 21) * 100, duration: 1.6 + i * .25, ease: 'power3.inOut', delay: i * .08 });
+                    });
+                    if (ruler) ruler.style.setProperty('--fill', Math.min(1, .35 + target / Math.max(target, 100) * .65));
+                },
             });
         });
 
@@ -825,21 +903,73 @@
         if (lb && links.length) {
             const img = $('.lightbox__img', lb);
             let index = 0;
-            const show = (i) => {
+            let origin = null;
+            const show = (i, dir = 1) => {
                 index = (i + links.length) % links.length;
-                if (hasGsap) gsap.fromTo(img, { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: .5, ease: 'power3.out' });
                 img.src = links[index].href;
+                if (hasGsap) gsap.fromTo(img, { opacity: 0, x: 60 * dir }, { opacity: 1, x: 0, y: 0, scale: 1, duration: .5, ease: 'power3.out' });
             };
-            const close = () => { lb.classList.remove('is-open'); lenis && lenis.start(); };
-            links.forEach((a, i) => a.addEventListener('click', (e) => { e.preventDefault(); show(i); lb.classList.add('is-open'); lenis && lenis.stop(); }));
-            $('.lightbox__next', lb).addEventListener('click', () => show(index + 1));
-            $('.lightbox__prev', lb).addEventListener('click', () => show(index - 1));
+            // بزرگ‌نمایی از محل تصویر کوچک (FLIP)
+            const open = (i) => {
+                index = i;
+                const thumb = $('img', links[i]);
+                origin = thumb;
+                img.src = links[i].href;
+                lb.classList.add('is-open');
+                lenis && lenis.stop();
+                haptic(8);
+                if (!hasGsap || reduced || !thumb) return;
+                const from = thumb.getBoundingClientRect();
+                const run = () => {
+                    const to = img.getBoundingClientRect();
+                    if (!to.width) return;
+                    gsap.fromTo(img, {
+                        x: (from.left + from.width / 2) - (to.left + to.width / 2),
+                        y: (from.top + from.height / 2) - (to.top + to.height / 2),
+                        scale: from.width / to.width, opacity: 1,
+                    }, { x: 0, y: 0, scale: 1, duration: .7, ease: 'power4.out' });
+                };
+                img.complete && img.naturalWidth ? run() : img.addEventListener('load', run, { once: true });
+            };
+            const close = () => {
+                const done = () => { lb.classList.remove('is-open'); gsap && gsap.set(img, { clearProps: 'transform,opacity' }); lenis && lenis.start(); };
+                const thumb = $('img', links[index]);
+                if (!hasGsap || reduced || !thumb) return done();
+                const from = img.getBoundingClientRect();
+                const to = thumb.getBoundingClientRect();
+                const cx = gsap.getProperty(img, 'x'), cy = gsap.getProperty(img, 'y');
+                gsap.to(img, {
+                    x: cx + (to.left + to.width / 2) - (from.left + from.width / 2),
+                    y: cy + (to.top + to.height / 2) - (from.top + from.height / 2),
+                    scale: to.width / (from.width / gsap.getProperty(img, 'scale')), duration: .55, ease: 'power3.inOut', onComplete: done,
+                });
+                gsap.to(lb, { backgroundColor: 'rgba(10,23,26,0)', duration: .5, onComplete: () => gsap.set(lb, { clearProps: 'backgroundColor' }) });
+            };
+            links.forEach((a, i) => a.addEventListener('click', (e) => { e.preventDefault(); open(i); }));
+            $('.lightbox__next', lb).addEventListener('click', () => show(index + 1, -1));
+            $('.lightbox__prev', lb).addEventListener('click', () => show(index - 1, 1));
             lb.addEventListener('click', (e) => { if (e.target === lb || e.target.closest('.modal__close')) close(); });
             document.addEventListener('keydown', (e) => {
                 if (!lb.classList.contains('is-open')) return;
                 if (e.key === 'Escape') close();
-                if (e.key === 'ArrowLeft') show(index + 1);
-                if (e.key === 'ArrowRight') show(index - 1);
+                if (e.key === 'ArrowLeft') show(index + 1, -1);
+                if (e.key === 'ArrowRight') show(index - 1, 1);
+            });
+            // کشیدن: چپ/راست = تصویر بعد/قبل، پایین = بستن
+            onSwipe(lb, {
+                onMove: (dx, dy, axis) => { if (!hasGsap) return; if (axis === 'y' && dy > 0) gsap.set(img, { y: dy, scale: 1 - Math.min(dy / 1500, .2) }); else if (axis === 'x') gsap.set(img, { x: dx }); },
+                onEnd: (dx, dy, axis, v) => {
+                    if (axis === 'y' && (dy > 120 || (dy > 40 && v > .6))) return close();
+                    if (axis === 'x' && Math.abs(dx) > 60) { haptic(6); return dx < 0 ? show(index + 1, -1) : show(index - 1, 1); }
+                    if (hasGsap) gsap.to(img, { x: 0, y: 0, scale: 1, duration: .4, ease: 'power3.out' });
+                },
+            });
+        }
+
+        // ویدیو: کشیدن به پایین برای بستن
+        if (videoModal) {
+            onSwipe(videoModal, {
+                onEnd: (dx, dy, axis) => { if (axis === 'y' && dy > 100) $('.modal__close', videoModal).click(); },
             });
         }
     }
@@ -933,6 +1063,7 @@
                 });
                 const data = await res.json().catch(() => ({}));
                 if (res.ok) {
+                    haptic([10, 40, 18]);
                     alertBox.className = 'alert alert--success';
                     alertBox.innerHTML = '<i class="ri-checkbox-circle-line"></i> ' + (data.message || 'پیام شما ارسال شد.');
                     form.reset();
@@ -1039,6 +1170,9 @@
     initContactForm();
     initInteractions();
     initTestimonials();
+
+    // در دسترس قرار دادن ابزارها برای showcase.js
+    window.TH = { $, $$, toast, haptic, onSwipe, ready, lenis, reduced, isTouch, hasGsap, hasST, faDigits, splitWords };
 
     // انیمیشن‌های اسکرول پس از پیش‌بارگذار
     ready.then(() => {

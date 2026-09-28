@@ -30,6 +30,7 @@
     </div>
 </section>
 
+@include('partials.projects-map', ['projects' => $projects])
 @include('partials.cta')
 @endsection
 

@@ -21,6 +21,7 @@
 </section>
 
 @include('partials.timeline')
+@include('partials.calculator')
 @include('partials.faq')
 @include('partials.cta')
 @endsection

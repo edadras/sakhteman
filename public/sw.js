@@ -2,7 +2,7 @@
  * صفحات: ابتدا شبکه، در صورت قطعی از کش یا صفحه آفلاین
  * فایل‌های ثابت و تصاویر: از کش با به‌روزرسانی در پس‌زمینه
  */
-const VERSION = 'v2';
+const VERSION = 'v3';
 const STATIC_CACHE = 'th-static-' + VERSION;
 const PAGE_CACHE = 'th-pages-' + VERSION;
 const IMG_CACHE = 'th-img-' + VERSION;
@@ -50,6 +50,8 @@ self.addEventListener('fetch', (event) => {
     const url = new URL(req.url);
     if (url.origin !== self.location.origin) return;
     if (NO_CACHE.some((r) => r.test(url.pathname))) return;
+    // ویدیو و درخواست‌های بازه‌ای (Range) مستقیما از شبکه
+    if (req.headers.has('range') || /\.(mp4|webm|mov|m4v|mp3|ogg)$/i.test(url.pathname)) return;
 
     // صفحات HTML
     if (req.mode === 'navigate' || (req.headers.get('accept') || '').includes('text/html')) {

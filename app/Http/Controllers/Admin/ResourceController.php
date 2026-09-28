@@ -146,6 +146,9 @@ class ResourceController extends Controller
         foreach ($def['fields'] as $name => $field) {
             if (in_array($field['type'] ?? null, ['number', 'price'], true) && $request->filled($name)) {
                 $request->merge([$name => preg_replace('/[^\d]/', '', en_num((string) $request->input($name)))]);
+            } elseif (str_contains($field['rules'] ?? '', 'numeric') && $request->filled($name)) {
+                // اعداد اعشاری مثل مختصات جغرافیایی (پذیرش ارقام و ممیز فارسی)
+                $request->merge([$name => str_replace(['٫', '/', '،', ','], '.', trim(en_num((string) $request->input($name))))]);
             }
         }
 
@@ -155,7 +158,7 @@ class ResourceController extends Controller
             if ($type === 'image') {
                 $rules[$name] = 'nullable|file|mimes:jpg,jpeg,png,webp,gif,svg,avif|max:6144';
             } elseif ($type === 'file') {
-                $rules[$name] = 'nullable|file|mimes:pdf,zip,rar,jpg,jpeg,png,webp|max:30720';
+                $rules[$name] = $field['rules'] ?? 'nullable|file|mimes:pdf,zip,rar,jpg,jpeg,png,webp|max:30720';
             } elseif ($type === 'gallery') {
                 $rules[$name.'_new'] = 'nullable|array';
                 $rules[$name.'_new.*'] = 'file|mimes:jpg,jpeg,png,webp,gif,avif|max:6144';

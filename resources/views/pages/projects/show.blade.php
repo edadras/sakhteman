@@ -62,6 +62,15 @@
     </div>
 </section>
 
+@if ($project->before_image)
+<section class="section" style="padding-top:0">
+    <div class="container">
+        @include('partials.sec-head', ['title' => 'قبل و بعد', 'en' => 'Before & after', 'icon' => 'ri-contrast-2-line'])
+        <div data-reveal="scale">@include('partials.before-after', ['before' => media_url($project->before_image), 'after' => media_url($project->cover), 'alt' => $project->title])</div>
+    </div>
+</section>
+@endif
+
 @if (! empty($project->gallery))
 <section class="section" style="padding-top:0">
     <div class="container">

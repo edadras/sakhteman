@@ -37,6 +37,9 @@ class SiteController extends Controller
             'posts' => Post::active()->latestFirst()->take(3)->get(),
             'partners' => Partner::active()->ordered()->get(),
             'faqs' => Faq::active()->ordered()->take(5)->get(),
+            'showcase' => Project::active()->whereNotNull('before_image')->where('is_featured', true)->ordered()->first()
+                ?? Project::active()->whereNotNull('before_image')->ordered()->first(),
+            'project3d' => $featured->first(),
             'products' => setting('shop_enabled', '1') === '1'
                 ? Product::active()->with('category')->where('is_featured', true)->ordered()->take(8)->get()
                 : collect(),

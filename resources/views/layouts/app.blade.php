@@ -69,12 +69,20 @@
             </svg>
             <div class="preloader__count">۰</div>
             <div class="preloader__title">{{ $siteTitle }}</div>
+            <div class="preloader__tag">{{ setting('site_tagline') }}</div>
             <div class="preloader__bar"><span></span></div>
         </div>
         <div class="preloader__panel"></div>
     </div>
 
-    <div class="page-transition" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="page-transition" aria-hidden="true">
+        <span></span><span></span><span></span>
+        <svg class="pt-logo" viewBox="0 0 64 64" fill="none">
+            <path d="M6 30 32 12l26 18" stroke="#fbb12e" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+            <path d="M6 42 32 24l26 18" stroke="#4f9a53" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+            <path d="M6 54 32 36l26 18" stroke="#6cc070" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+        </svg>
+    </div>
     <div class="cursor" aria-hidden="true"><span class="cursor__text"></span></div>
     <div class="cursor-dot" aria-hidden="true"></div>
     <div class="scroll-indicator" aria-hidden="true"><span></span></div>
@@ -122,6 +130,7 @@
     <script src="{{ asset('assets/vendor/swiper/swiper-bundle.min.js') }}"></script>
     <script src="{{ asset('assets/vendor/lenis/lenis.min.js') }}"></script>
     <script src="{{ asset('assets/js/app.js') }}?v={{ filemtime(public_path('assets/js/app.js')) }}"></script>
+    <script src="{{ asset('assets/js/showcase.js') }}?v={{ filemtime(public_path('assets/js/showcase.js')) }}"></script>
     @stack('scripts')
 </body>
 </html>
