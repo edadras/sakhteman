@@ -40,7 +40,11 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('admin.dashboard'))->with('success', 'خوش آمدید، '.Auth::user()->name);
+        // فقط به آدرس‌های داخل پنل بازگردانده می‌شود (نه صفحات مشتری)
+        $intended = (string) $request->session()->pull('url.intended', '');
+        $target = str_starts_with(parse_url($intended, PHP_URL_PATH) ?? '', '/admin') ? $intended : route('admin.dashboard');
+
+        return redirect()->to($target)->with('success', 'خوش آمدید، '.Auth::user()->name);
     }
 
     public function logout(Request $request)

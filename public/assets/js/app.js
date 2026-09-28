@@ -411,7 +411,7 @@
 
         // کنترل تعداد
         $$('[data-qty]').forEach((box) => {
-            const input = $('input', box);
+            const input = $('input[name=quantity]', box);
             $$('[data-step]', box).forEach((b) => b.addEventListener('click', () => {
                 const min = parseInt(input.min || '0', 10);
                 input.value = Math.max(min, Math.min(99, (parseInt(input.value, 10) || 0) + parseInt(b.dataset.step, 10)));

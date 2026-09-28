@@ -32,7 +32,7 @@ class CustomerAuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('account'))->with('success', 'خوش آمدید، '.Auth::user()->name);
+        return redirect()->to($this->intendedFor($request))->with('success', 'خوش آمدید، '.Auth::user()->name);
     }
 
     public function showRegister()
@@ -58,7 +58,18 @@ class CustomerAuthController extends Controller
         Auth::login($user, true);
         $request->session()->regenerate();
 
-        return redirect()->intended(route('account'))->with('success', 'حساب کاربری شما با موفقیت ساخته شد.');
+        return redirect()->to($this->intendedFor($request))->with('success', 'حساب کاربری شما با موفقیت ساخته شد.');
+    }
+
+    /**
+     * بازگشت به صفحه قبلی مشتری؛ آدرس‌های پنل مدیریت نادیده گرفته می‌شوند.
+     */
+    protected function intendedFor(Request $request): string
+    {
+        $intended = (string) $request->session()->pull('url.intended', '');
+        $path = parse_url($intended, PHP_URL_PATH) ?? '';
+
+        return $intended && ! str_starts_with($path, '/admin') ? $intended : route('account');
     }
 
     public function logout(Request $request)
