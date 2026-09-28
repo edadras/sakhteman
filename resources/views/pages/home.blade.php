@@ -52,7 +52,7 @@
                     <div class="swiper-slide">
                         <div class="hero-slide">
                             <div class="hero-slide__content">
-                                <h1 class="hero-slide__title"><span class="line"><span>{{ setting('site_title', 'طاهورنیان') }}</span></span></h1>
+                                <h1 class="hero-slide__title"><span class="line"><span>{{ setting('site_title', 'طهورنیان') }}</span></span></h1>
                                 <p class="hero-slide__desc">{{ setting('site_tagline') }}</p>
                             </div>
                             <div class="hero-slide__media"><span class="hero-diamond"></span><div class="hero-arch"><img src="{{ asset('assets/img/demo/hero-2.jpg') }}" alt=""></div></div>

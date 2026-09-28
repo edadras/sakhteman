@@ -8,7 +8,7 @@
                     @else
                         <img class="brand__mark" src="{{ asset('assets/img/logo-mark.svg') }}" alt="">
                         <span class="brand__text">
-                            <span class="brand__name">{{ setting('site_title', 'طاهورنیان') }}</span>
+                            <span class="brand__name">{{ setting('site_title', 'طهورنیان') }}</span>
                             <span class="brand__tag">{{ setting('site_tagline') }}</span>
                         </span>
                     @endif
@@ -67,5 +67,5 @@
             <span>طراحی و توسعه با <i class="ri-heart-3-fill text-gold"></i> برای {{ setting('site_title') }}</span>
         </div>
     </div>
-    <div class="footer-big" aria-hidden="true">{{ \Illuminate\Support\Str::of(setting('site_title', 'طاهورنیان'))->explode(' ')->last() }}</div>
+    <div class="footer-big" aria-hidden="true">{{ \Illuminate\Support\Str::of(setting('site_title', 'طهورنیان'))->explode(' ')->last() }}</div>
 </footer>

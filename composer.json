@@ -1,7 +1,7 @@
 {
     "name": "tahournian/website",
     "type": "project",
-    "description": "وب‌سایت گروه ساختمانی طاهورنیان — Laravel + MySQL با پنل مدیریت فارسی",
+    "description": "وب‌سایت گروه ساختمانی طهورنیان — Laravel + MySQL با پنل مدیریت فارسی",
     "keywords": ["laravel", "construction", "persian", "rtl"],
     "license": "proprietary",
     "require": {

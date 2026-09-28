@@ -21,7 +21,7 @@
     <aside class="a-sidebar">
         <a href="{{ route('admin.dashboard') }}" class="a-brand">
             <img src="{{ asset('assets/img/logo-mark.svg') }}" alt="">
-            <div><strong>{{ setting('site_title', 'طاهورنیان') }}</strong><small>پنل مدیریت محتوا</small></div>
+            <div><strong>{{ setting('site_title', 'طهورنیان') }}</strong><small>پنل مدیریت محتوا</small></div>
         </a>
         <nav class="a-nav">
             <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"><i class="ri-dashboard-3-line"></i>داشبورد</a>

@@ -21,7 +21,7 @@
             @else
                 <img class="brand__mark" src="{{ asset('assets/img/logo-mark.svg') }}" alt="">
                 <span class="brand__text">
-                    <span class="brand__name">{{ \Illuminate\Support\Str::of(setting('site_title', 'طاهورنیان'))->explode(' ')->last() }}</span>
+                    <span class="brand__name">{{ \Illuminate\Support\Str::of(setting('site_title', 'طهورنیان'))->explode(' ')->last() }}</span>
                     <span class="brand__tag">{{ setting('site_tagline') }}</span>
                 </span>
             @endif
