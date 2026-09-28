@@ -14,6 +14,7 @@
     <meta name="description" content="{{ $metaDescription }}">
     <meta name="keywords" content="{{ setting('meta_keywords') }}">
     <meta name="theme-color" content="#0e1e21">
+    <noscript><style>.preloader, .page-transition { display: none !important; }</style></noscript>
     <link rel="manifest" href="{{ route('pwa.manifest') }}">
     <link rel="apple-touch-icon" href="{{ asset('assets/pwa/apple-touch-icon.png') }}">
     <meta name="mobile-web-app-capable" content="yes">
