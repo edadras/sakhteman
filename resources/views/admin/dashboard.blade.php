@@ -120,14 +120,14 @@
         if (!el || !window.Chart) return;
         const ctx = el.getContext('2d');
         const grad = ctx.createLinearGradient(0, 0, 0, 260);
-        grad.addColorStop(0, 'rgba(201,161,91,.35)');
-        grad.addColorStop(1, 'rgba(201,161,91,0)');
+        grad.addColorStop(0, 'rgba(79,154,83,.35)');
+        grad.addColorStop(1, 'rgba(79,154,83,0)');
         Chart.defaults.font.family = 'Vazirmatn';
         new Chart(ctx, {
             type: 'line',
             data: {
                 labels: @json($chart['labels']),
-                datasets: [{ label: 'پیام', data: @json($chart['data']), borderColor: '#c9a15b', backgroundColor: grad, fill: true, tension: .4, pointRadius: 3, pointBackgroundColor: '#c9a15b' }],
+                datasets: [{ label: 'پیام', data: @json($chart['data']), borderColor: '#4f9a53', backgroundColor: grad, fill: true, tension: .4, pointRadius: 3, pointBackgroundColor: '#fbb12e' }],
             },
             options: {
                 plugins: { legend: { display: false } },

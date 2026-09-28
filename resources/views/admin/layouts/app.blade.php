@@ -30,6 +30,12 @@
                 @if ($unreadCount)<span class="badge badge-danger">{{ fa_num($unreadCount) }}</span>@endif
             </a>
 
+            <a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+                <i class="ri-shopping-cart-2-line"></i>سفارش‌ها
+                @if ($pendingOrders)<span class="badge badge-danger">{{ fa_num($pendingOrders) }}</span>@endif
+            </a>
+            <a href="{{ route('admin.customers.index') }}" class="{{ request()->routeIs('admin.customers.*') ? 'active' : '' }}"><i class="ri-group-line"></i>مشتریان</a>
+
             @foreach (\App\Admin\Resources::grouped() as $group => $items)
                 <div class="a-nav__group">{{ $group }}</div>
                 @foreach ($items as $key => $def)

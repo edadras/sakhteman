@@ -9,9 +9,8 @@
 @endpush
 
 @section('content')
-<section class="page-hero">
-    <div class="page-hero__bg" data-parallax=".25" style="background-image:url('{{ media_url($post->cover) }}')"></div>
-    <div class="page-hero__grid"></div>
+<section class="page-hero grid-bg" data-grid-spot>
+    <div class="page-hero__img"><img src="{{ media_url($post->cover) }}" alt="" data-parallax=".2"></div>
     <div class="container">
         @if ($post->category)<span class="eyebrow">{{ $post->category }}</span>@endif
         <h1 style="font-size:clamp(30px,4.6vw,60px)">{{ $post->title }}</h1>
@@ -28,7 +27,7 @@
     <div class="container content-grid">
         <article data-article>
             @if ($post->excerpt)
-                <p class="section-title" style="font-size:22px;font-weight:600;line-height:2;color:var(--text)" data-reveal>{{ $post->excerpt }}</p>
+                <p style="font-size:21px;font-weight:600;line-height:2;color:var(--ink)" data-reveal>{{ $post->excerpt }}</p>
             @endif
             <div class="prose" data-reveal>{!! $post->body !!}</div>
 

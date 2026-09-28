@@ -84,6 +84,9 @@
                                         @case('date')
                                             {{ $value ? jdate($value) : '—' }}
                                             @break
+                                        @case('price')
+                                            {!! $value ? fa_num(number_format($value)).' <small class="text-muted">تومان</small>' : '<span class="text-muted">—</span>' !!}
+                                            @break
                                         @case('number')
                                             {{ fa_num($value ?? 0) }}
                                             @break
@@ -94,7 +97,7 @@
                             @endforeach
                             <td>
                                 <div class="actions">
-                                    @if (in_array($def['key'], ['services', 'projects', 'posts']) && $item->slug)
+                                    @if (in_array($def['key'], ['services', 'projects', 'posts', 'products']) && $item->slug)
                                         <a class="btn btn-light btn-sm btn-icon" href="{{ $item->url }}" target="_blank" title="مشاهده در سایت"><i class="ri-eye-line"></i></a>
                                     @endif
                                     <a class="btn btn-light btn-sm" href="{{ route('admin.resources.edit', [$def['key'], $item->id]) }}"><i class="ri-edit-line"></i>ویرایش</a>

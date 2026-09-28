@@ -3,7 +3,7 @@
 @section('title', 'صفحه یافت نشد')
 
 @section('content')
-<section class="error-page">
+<section class="error-page grid-bg" data-grid-spot>
     <div>
         <div class="error-page__code">{{ fa_num(404) }}</div>
         <h1 style="font-size:clamp(26px,4vw,44px)">این صفحه هنوز ساخته نشده!</h1>

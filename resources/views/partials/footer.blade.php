@@ -1,4 +1,4 @@
-<footer class="site-footer">
+<footer class="site-footer grid-bg" data-grid-spot>
     <div class="container">
         <div class="footer-grid">
             <div class="footer-about" data-reveal>

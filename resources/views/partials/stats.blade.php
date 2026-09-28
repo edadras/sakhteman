@@ -1,15 +1,17 @@
 @if ($stats->count())
-<section class="section section--tight stats">
+<div class="stats-wrap {{ $class ?? '' }}">
     <div class="container">
-        <div class="stats-grid" data-stagger=".12">
+        <div class="stats-grid" data-stagger=".1">
             @foreach ($stats as $stat)
                 <div class="stat">
-                    @if ($stat->icon)<i class="stat__icon {{ $stat->icon }}"></i>@endif
-                    <div class="stat__value"><span data-counter="{{ $stat->value }}">{{ fa_num($stat->value) }}</span><span class="suffix">{{ $stat->suffix }}</span></div>
-                    <div class="stat__label">{{ $stat->title }}</div>
+                    <span class="stat__icon"><i class="{{ $stat->icon ?: 'ri-award-line' }}"></i></span>
+                    <div>
+                        <div class="stat__value"><span data-counter="{{ $stat->value }}">{{ fa_num($stat->value) }}</span><span class="text-amber">{{ $stat->suffix }}</span></div>
+                        <div class="stat__label">{{ $stat->title }}</div>
+                    </div>
                 </div>
             @endforeach
         </div>
     </div>
-</section>
+</div>
 @endif

@@ -205,3 +205,25 @@
         window.addEventListener('beforeunload', (e) => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
     }
 })();
+
+/* قالب‌بندی قیمت با جداکننده هزارگان و نمایش به حروف ساده */
+(function () {
+    const units = [[1e9, 'میلیارد'], [1e6, 'میلیون'], [1e3, 'هزار']];
+    const toWords = (n) => {
+        if (!n) return '';
+        const parts = [];
+        units.forEach(([v, name]) => { if (n >= v) { parts.push(Math.floor(n / v).toLocaleString('fa-IR') + ' ' + name); n %= v; } });
+        if (n) parts.push(n.toLocaleString('fa-IR'));
+        return parts.join(' و ') + ' تومان';
+    };
+    document.querySelectorAll('[data-price]').forEach((input) => {
+        const words = input.closest('.form-group').querySelector('[data-price-words]');
+        const format = () => {
+            const digits = input.value.replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[^\d]/g, '');
+            input.value = digits ? Number(digits).toLocaleString('en-US') : '';
+            if (words) words.textContent = toWords(Number(digits || 0));
+        };
+        input.addEventListener('input', format);
+        format();
+    });
+})();

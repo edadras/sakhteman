@@ -17,7 +17,7 @@ class DashboardController extends Controller
         $cards = [
             ['label' => 'پروژه‌ها', 'value' => Project::count(), 'icon' => 'ri-building-4-line', 'color' => 'amber', 'route' => route('admin.resources.index', 'projects')],
             ['label' => 'خدمات', 'value' => Service::count(), 'icon' => 'ri-tools-line', 'color' => 'blue', 'route' => route('admin.resources.index', 'services')],
-            ['label' => 'مقالات', 'value' => Post::count(), 'icon' => 'ri-article-line', 'color' => 'green', 'route' => route('admin.resources.index', 'posts')],
+            ['label' => 'سفارش‌های جدید', 'value' => \App\Models\Order::where('status', 'pending')->count(), 'icon' => 'ri-shopping-cart-2-line', 'color' => 'green', 'route' => route('admin.orders.index', ['status' => 'pending'])],
             ['label' => 'پیام‌های جدید', 'value' => Message::where('is_read', false)->count(), 'icon' => 'ri-mail-unread-line', 'color' => 'rose', 'route' => route('admin.messages.index')],
         ];
 

@@ -18,8 +18,8 @@
             @if ($service->image)
                 <div class="service-hero-img img-reveal" data-img-reveal="up"><img src="{{ media_url($service->image) }}" alt="{{ $service->title }}"></div>
             @endif
-            <span class="eyebrow"><i class="{{ $service->icon }}"></i> {{ $service->title }}</span>
-            <h2 class="section-title" style="font-size:clamp(26px,3vw,40px)" data-split>{{ $service->summary }}</h2>
+            <span class="badge badge--amber" style="margin-bottom:14px"><i class="{{ $service->icon }}"></i> {{ $service->title }}</span>
+            <h2 style="font-size:clamp(24px,2.8vw,36px);line-height:1.6" data-split>{{ $service->summary }}</h2>
 
             @if ($service->feature_list)
                 <div class="feature-grid" data-stagger=".08">
@@ -43,29 +43,23 @@
                     @endforeach
                 </div>
             </div>
-            <div class="widget widget--cta" data-reveal data-delay=".1">
+            <div class="widget widget--cta grid-bg" data-reveal data-delay=".1">
                 <i class="ri-customer-service-2-line big"></i>
                 <h3>نیاز به مشاوره دارید؟</h3>
                 <p>کارشناسان ما آماده پاسخگویی به سوالات شما هستند.</p>
                 @if (setting('phone'))
                     <a class="phone" href="tel:{{ preg_replace('/[^\d+]/', '', en_num(setting('phone'))) }}">{{ fa_num(setting('phone')) }}</a>
                 @endif
-                <a href="{{ route('contact') }}" class="btn btn--dark"><span>ارسال پیام</span><i class="ri-arrow-left-up-line"></i></a>
+                <a href="{{ route('contact') }}" class="btn"><span>ارسال پیام</span><i class="ri-arrow-left-up-line"></i></a>
             </div>
         </aside>
     </div>
 </section>
 
 @if ($projects->count())
-<section class="section section--dark2">
+<section class="section" style="padding-top:0">
     <div class="container">
-        <div class="section-head">
-            <div class="section-head__text">
-                <span class="eyebrow">نمونه کارها</span>
-                <h2 class="section-title" data-split>پروژه‌های <em>مرتبط</em></h2>
-            </div>
-            <a href="{{ route('projects.index') }}" class="btn btn--outline" data-reveal><span>همه پروژه‌ها</span><i class="ri-arrow-left-up-line"></i></a>
-        </div>
+        @include('partials.sec-head', ['title' => 'پروژه‌های مرتبط', 'en' => 'Projects', 'icon' => 'ri-building-line', 'button' => ['همه پروژه ها', route('projects.index')]])
         <div class="projects-grid" data-stagger=".12">
             @foreach ($projects as $project)
                 @include('partials.project-card', ['project' => $project])

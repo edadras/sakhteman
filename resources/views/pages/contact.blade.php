@@ -8,9 +8,8 @@
 <section class="section">
     <div class="container contact-grid">
         <div>
-            <span class="eyebrow">اطلاعات تماس</span>
-            <h2 class="section-title" style="font-size:clamp(28px,3vw,42px)" data-split>بیایید درباره <em>پروژه شما</em> صحبت کنیم</h2>
-            <div class="contact-cards" data-stagger=".1" style="margin-top:30px">
+            @include('partials.sec-head', ['title' => 'اطلاعات تماس', 'en' => 'Contact us', 'icon' => 'ri-customer-service-2-line'])
+            <div class="contact-cards" data-stagger=".1">
                 @if (setting('phone') || setting('mobile'))
                     <a class="contact-card" href="tel:{{ preg_replace('/[^\d+]/', '', en_num(setting('phone') ?: setting('mobile'))) }}">
                         <i class="ri-phone-line"></i>
@@ -40,7 +39,7 @@
                     </div>
                 @endif
             </div>
-            <div style="margin-top:30px" data-reveal>@include('partials.social')</div>
+            <div style="margin-top:30px" data-reveal>@include('partials.social', ['class' => 'social social--light'])</div>
         </div>
 
         <div class="form-box" data-reveal="left">
@@ -102,5 +101,5 @@
     @endif
 </section>
 
-@include('partials.faq', ['class' => 'section--dark2'])
+@include('partials.faq')
 @endsection

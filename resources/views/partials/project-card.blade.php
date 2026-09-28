@@ -1,18 +1,20 @@
-<a href="{{ $project->url }}" class="project-card {{ $class ?? '' }}" data-category="{{ $project->category_id }}" data-cursor="مشاهده">
-    <div class="project-card__media">
-        <img src="{{ media_url($project->cover) }}" alt="{{ $project->title }}" loading="lazy">
-    </div>
-    @if ($project->category)
-        <span class="project-card__cat">{{ $project->category->name }}</span>
-    @endif
-    <div class="project-card__body">
-        <div>
-            <h3 class="project-card__title">{{ $project->title }}</h3>
-            <div class="project-card__meta">
-                @if ($project->location)<span><i class="ri-map-pin-line"></i>{{ $project->location }}</span>@endif
-                @if ($project->year)<span><i class="ri-calendar-line"></i>{{ fa_num($project->year) }}</span>@endif
-            </div>
+@php
+    $badge = ['completed' => 'badge--green', 'in_progress' => 'badge--amber'][$project->status] ?? 'badge--gray';
+@endphp
+<a href="{{ $project->url }}" class="project-card {{ $class ?? '' }}" data-category="{{ $project->category_id }}">
+    <div class="card-top">
+        <div class="project-card__media">
+            <img src="{{ media_url($project->cover) }}" alt="{{ $project->title }}" loading="lazy">
         </div>
-        <span class="project-card__arrow"><i class="ri-arrow-left-up-line"></i></span>
+        <span class="badge {{ $badge }} card-top__badge">{{ $project->status_label }}</span>
     </div>
+    <div class="project-card__body">
+        <h3 class="project-card__title">{{ $project->title }}</h3>
+        @if ($project->location)<span class="project-card__loc"><i class="ri-map-pin-2-line"></i>{{ $project->location }}</span>@endif
+    </div>
+    <div class="project-card__stats">
+        <div><small>تعداد طبقات</small><strong>{{ fa_num($project->floors ?: '—') }}</strong></div>
+        <div><small>تعداد واحدها</small><strong>{{ fa_num($project->units ?: ($project->area ?: '—')) }}</strong></div>
+    </div>
+    <div class="project-card__foot"><span class="tab-shape"><span>مشاهده پروژه</span></span></div>
 </a>

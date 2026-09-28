@@ -26,6 +26,29 @@
             <input class="form-control @error($name) is-invalid @enderror" type="number" id="{{ $id }}" name="{{ $name }}" value="{{ old($name, $value) }}" min="0">
             @break
 
+        @case('price')
+            <div class="input-icon input-icon--end">
+                <input class="form-control @error($name) is-invalid @enderror" type="text" inputmode="numeric" id="{{ $id }}" name="{{ $name }}" value="{{ old($name, $value !== null && $value !== '' ? number_format((int) $value) : '') }}" dir="ltr" style="text-align:right" data-price placeholder="0">
+                <span class="input-suffix">تومان</span>
+            </div>
+            <div class="form-help price-words" data-price-words></div>
+            @break
+
+        @case('file')
+            <div class="upload">
+                <div class="upload__preview"><i class="ri-file-pdf-2-line"></i></div>
+                <div class="upload__body">
+                    <strong><i class="ri-upload-cloud-2-line"></i> انتخاب فایل</strong>
+                    <small>PDF، ZIP یا تصویر — حداکثر ۳۰ مگابایت</small>
+                    @if ($value)
+                        <a href="{{ media_url($value) }}" target="_blank" class="upload__remove" style="color:var(--a-primary)"><i class="ri-download-line"></i> مشاهده فایل فعلی</a>
+                        <label class="upload__remove"><input type="checkbox" name="{{ $name }}_remove" value="1"> حذف فایل فعلی</label>
+                    @endif
+                </div>
+                <input type="file" id="{{ $id }}" name="{{ $name }}">
+            </div>
+            @break
+
         @case('select')
             <select class="form-control @error($name) is-invalid @enderror" id="{{ $id }}" name="{{ $name }}">
                 @unless ($required)<option value="">— انتخاب کنید —</option>@endunless

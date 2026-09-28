@@ -67,6 +67,23 @@ class SettingFields
                     'cta_text' => ['label' => 'متن بخش دعوت به همکاری', 'type' => 'text', 'col' => 'half'],
                 ],
             ],
+            'sections' => [
+                'label' => 'کاتالوگ، مشاوره و تیم',
+                'icon' => 'ri-layout-masonry-line',
+                'fields' => [
+                    'catalogue_title' => ['label' => 'عنوان کارت کاتالوگ', 'type' => 'text', 'col' => 'half'],
+                    'catalogue_subtitle' => ['label' => 'زیرعنوان انگلیسی کاتالوگ', 'type' => 'text', 'col' => 'half', 'dir' => 'ltr'],
+                    'catalogue_file' => ['label' => 'فایل کاتالوگ (PDF)', 'type' => 'file', 'col' => 'half'],
+                    'catalogue_cover' => ['label' => 'تصویر کاور کاتالوگ', 'type' => 'image', 'col' => 'half'],
+                    'consult_title' => ['label' => 'عنوان کارت درخواست مشاوره', 'type' => 'text', 'col' => 'half'],
+                    'consult_subtitle' => ['label' => 'زیرعنوان انگلیسی مشاوره', 'type' => 'text', 'col' => 'half', 'dir' => 'ltr'],
+                    'consult_image' => ['label' => 'تصویر کارت مشاوره', 'type' => 'image'],
+                    'team_text' => ['label' => 'متن بخش تیم ما', 'type' => 'textarea'],
+                    'team_button_text' => ['label' => 'متن دکمه بخش تیم', 'type' => 'text', 'col' => 'half'],
+                    'team_button_link' => ['label' => 'لینک دکمه بخش تیم', 'type' => 'text', 'col' => 'half', 'dir' => 'ltr'],
+                    'shop_enabled' => ['label' => 'نمایش فروشگاه و سبد خرید در سایت', 'type' => 'select', 'options' => ['1' => 'فعال', '0' => 'غیرفعال'], 'rules' => 'required', 'col' => 'third'],
+                ],
+            ],
             'about' => [
                 'label' => 'صفحه درباره ما',
                 'icon' => 'ri-information-line',

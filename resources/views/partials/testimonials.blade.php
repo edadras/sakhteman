@@ -1,11 +1,10 @@
 @if ($testimonials->count())
-<section class="section {{ $class ?? 'section--light' }}">
+<section class="section">
     <div class="container testimonials-wrap">
         <div>
-            <span class="eyebrow">رضایت مشتریان</span>
-            <h2 class="section-title" data-split>آنچه <em>کارفرمایان</em> درباره ما می‌گویند</h2>
-            <p data-reveal>اعتماد کارفرمایان، بزرگ‌ترین سرمایه ماست و رضایت آن‌ها معیار موفقیت هر پروژه.</p>
-            <div class="testimonials-nav" data-reveal>
+            @include('partials.sec-head', ['title' => 'رضایت مشتریان', 'en' => 'Testimonials', 'icon' => 'ri-chat-quote-line'])
+            <p class="muted" data-reveal style="margin-top:-24px">اعتماد کارفرمایان، بزرگ‌ترین سرمایه ماست و رضایت آن‌ها معیار موفقیت هر پروژه.</p>
+            <div class="nav-btns" data-reveal>
                 <button class="t-prev" type="button" aria-label="قبلی"><i class="ri-arrow-right-line"></i></button>
                 <button class="t-next" type="button" aria-label="بعدی"><i class="ri-arrow-left-line"></i></button>
             </div>

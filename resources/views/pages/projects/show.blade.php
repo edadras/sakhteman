@@ -43,35 +43,29 @@
 <section class="section" style="padding-top:40px">
     <div class="container content-grid">
         <article>
-            <span class="eyebrow">درباره پروژه</span>
-            @if ($project->summary)
-                <h2 class="section-title" style="font-size:clamp(24px,2.6vw,36px)" data-split>{{ $project->summary }}</h2>
+                        @if ($project->summary)
+                <h2 style="font-size:clamp(22px,2.4vw,32px);line-height:1.7" data-split>{{ $project->summary }}</h2>
             @endif
             <div class="prose" data-reveal>{!! $project->body !!}</div>
         </article>
         <aside class="sidebar">
-            <div class="widget widget--cta" data-reveal>
+            <div class="widget widget--cta grid-bg" data-reveal>
                 <i class="ri-building-2-line big"></i>
                 <h3>پروژه‌ای مشابه در نظر دارید؟</h3>
                 <p>برای دریافت مشاوره رایگان و برآورد هزینه با ما تماس بگیرید.</p>
                 @if (setting('phone'))
                     <a class="phone" href="tel:{{ preg_replace('/[^\d+]/', '', en_num(setting('phone'))) }}">{{ fa_num(setting('phone')) }}</a>
                 @endif
-                <a href="{{ route('contact') }}" class="btn btn--dark"><span>درخواست مشاوره</span><i class="ri-arrow-left-up-line"></i></a>
+                <a href="{{ route('contact') }}" class="btn"><span>درخواست مشاوره</span><i class="ri-arrow-left-up-line"></i></a>
             </div>
         </aside>
     </div>
 </section>
 
 @if (! empty($project->gallery))
-<section class="section section--dark2">
+<section class="section" style="padding-top:0">
     <div class="container">
-        <div class="section-head">
-            <div class="section-head__text">
-                <span class="eyebrow">گالری تصاویر</span>
-                <h2 class="section-title" data-split>نگاهی <em>نزدیک‌تر</em> به پروژه</h2>
-            </div>
-        </div>
+        @include('partials.sec-head', ['title' => 'گالری تصاویر', 'en' => 'Gallery', 'icon' => 'ri-gallery-line'])
         <div class="gallery-grid" data-stagger=".08">
             @foreach ($project->gallery as $image)
                 <a href="{{ media_url($image) }}" data-lightbox data-cursor="بزرگنمایی">
@@ -99,12 +93,7 @@
 @if ($related->count())
 <section class="section">
     <div class="container">
-        <div class="section-head">
-            <div class="section-head__text">
-                <span class="eyebrow">پیشنهاد ما</span>
-                <h2 class="section-title" data-split>پروژه‌های <em>مشابه</em></h2>
-            </div>
-        </div>
+        @include('partials.sec-head', ['title' => 'پروژه‌های مشابه', 'en' => 'Related projects', 'icon' => 'ri-building-line', 'button' => ['همه پروژه ها', route('projects.index')]])
         <div class="projects-grid" data-stagger=".12">
             @foreach ($related as $item)
                 @include('partials.project-card', ['project' => $item])

@@ -206,7 +206,7 @@
         const onScroll = () => {
             const y = window.scrollY;
             if (!header) return;
-            header.classList.toggle('is-scrolled', y > 40);
+            header.classList.toggle('is-scrolled', y > 40 || document.body.classList.contains('header-solid'));
             const delta = y - lastY;
             if (Math.abs(delta) < 8) return;
             header.classList.toggle('is-hidden', !menuOpen && delta > 0 && y > 400);
@@ -248,19 +248,24 @@
     function initHero() {
         const el = $('.hero .swiper');
         if (!el) return;
-
-        const current = $('.hero-counter__current');
-        const progress = $('.hero-counter__bar span');
+        const dots = $$('.hero-dots button');
 
         const animateSlide = (slide) => {
             if (!slide || !hasGsap || reduced) return;
-            const lines = $$('.hero-slide__title .line > span', slide);
-            const tl = gsap.timeline();
-            tl.fromTo($('.hero-slide__sub', slide), { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: .8, ease: 'power3.out' })
-                .fromTo(lines, { yPercent: 115, rotate: -3 }, { yPercent: 0, rotate: 0, duration: 1.2, ease: 'power4.out', stagger: .12 }, '-=.6')
-                .fromTo($('.hero-slide__desc', slide), { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: .8, ease: 'power3.out' }, '-=.8')
-                .fromTo($$('.hero-slide__actions > *', slide), { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: .7, ease: 'power3.out', stagger: .1 }, '-=.6');
+            const q = (s) => $$(s, slide);
+            gsap.timeline()
+                .fromTo(q('.hero-tags span'), { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: .7, ease: 'power3.out', stagger: .08 })
+                .fromTo(q('.hero-slide__title .line > span'), { yPercent: 115 }, { yPercent: 0, duration: 1.1, ease: 'power4.out', stagger: .12 }, '-=.45')
+                .fromTo(q('.hero-designer'), { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: .8, ease: 'power3.out' }, '-=.7')
+                .fromTo(q('.hero-slide__desc'), { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: .8, ease: 'power3.out' }, '-=.6')
+                .fromTo(q('.hero-slide__actions > *'), { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: .7, ease: 'power3.out', stagger: .1 }, '-=.6')
+                .fromTo(q('.hero-arch'), { clipPath: 'inset(100% 0% 0% 0% round 999px 999px 0 0)' }, { clipPath: 'inset(0% 0% 0% 0% round 999px 999px 0 0)', duration: 1.4, ease: 'power4.inOut' }, 0)
+                .fromTo(q('.hero-arch img'), { scale: 1.3 }, { scale: 1, duration: 1.8, ease: 'power3.out' }, 0)
+                .fromTo(q('.hero-diamond'), { scale: .4, opacity: 0, rotate: 0 }, { scale: 1, opacity: 1, rotate: 45, duration: 1.4, ease: 'back.out(1.6)' }, .2)
+                .fromTo(q('.hero-leaf'), { scale: 0 }, { scale: 1, duration: 1, ease: 'back.out(2)', stagger: .15 }, .6);
         };
+
+        const setDots = (index) => dots.forEach((d, i) => d.classList.toggle('is-active', i === index));
 
         if (typeof window.Swiper === 'undefined') {
             ready.then(() => animateSlide($('.hero-slide', el)));
@@ -271,42 +276,184 @@
         const swiper = new Swiper(el, {
             effect: 'fade',
             fadeEffect: { crossFade: true },
-            speed: 1400,
+            speed: 900,
             loop: slidesCount > 1,
             allowTouchMove: slidesCount > 1,
-            autoplay: slidesCount > 1 ? { delay: 6500, disableOnInteraction: false } : false,
+            autoHeight: false,
+            autoplay: slidesCount > 1 ? { delay: 7000, disableOnInteraction: false } : false,
             navigation: { nextEl: '.hero-next', prevEl: '.hero-prev' },
             on: {
                 slideChangeTransitionStart(s) {
-                    if (current) current.textContent = faDigits(String(s.realIndex + 1).padStart(2, '0'));
+                    setDots(s.realIndex);
                     animateSlide(s.slides[s.activeIndex]);
                 },
                 autoplayTimeLeft(s, time, pct) {
-                    if (progress) progress.style.transform = `scaleX(${1 - pct})`;
+                    const active = dots[s.realIndex];
+                    if (active) active.style.setProperty('--p', 1 - pct);
                 },
             },
         });
+        dots.forEach((d, i) => d.addEventListener('click', () => (slidesCount > 1 ? swiper.slideToLoop(i) : null)));
         swiper.autoplay && swiper.autoplay.stop && swiper.autoplay.stop();
 
         ready.then(() => {
             animateSlide(swiper.slides[swiper.activeIndex]);
-            if (swiper.params.autoplay && swiper.params.autoplay.enabled !== false && slidesCount > 1) swiper.autoplay.start();
-            if (hasGsap && !reduced) {
-                gsap.from('.hero-ui, .hero-social, .scroll-down', { opacity: 0, y: 30, duration: 1, delay: .8, ease: 'power3.out', stagger: .1 });
-            }
+            if (slidesCount > 1) swiper.autoplay.start();
+            if (hasGsap && !reduced) gsap.from('.hero-ui', { opacity: 0, y: 30, duration: 1, delay: .9, ease: 'power3.out' });
         });
 
-        // پارالاکس هیرو هنگام اسکرول
         if (hasST && !reduced) {
-            gsap.to('.hero .swiper', {
-                yPercent: 25, ease: 'none',
-                scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true },
-            });
-            gsap.to('.hero-slide__content', {
-                opacity: 0, y: -80, ease: 'none',
-                scrollTrigger: { trigger: '.hero', start: 'top top', end: '60% top', scrub: true },
-            });
+            gsap.to('.hero-slide__media', { yPercent: 12, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
+            gsap.to('.hero-slide__content', { opacity: 0, y: -60, ease: 'none', scrollTrigger: { trigger: '.hero', start: '10% top', end: '70% top', scrub: true } });
         }
+    }
+
+    /* ---------------------------------------------------------------
+       نور دنبال‌کننده ماوس روی پس‌زمینه‌های شبکه‌ای
+    --------------------------------------------------------------- */
+    function initGridSpot() {
+        if (isTouch) return;
+        $$('[data-grid-spot]').forEach((el) => {
+            el.addEventListener('mousemove', (e) => {
+                const r = el.getBoundingClientRect();
+                el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+                el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+            });
+        });
+    }
+
+    /* ---------------------------------------------------------------
+       فروشگاه: افزودن به سبد، علاقه‌مندی، تعداد، گالری
+    --------------------------------------------------------------- */
+    const toastEl = $('.site-toast');
+    let toastTimer;
+    function toast(message, isError = false, link = null) {
+        if (!toastEl) return;
+        $('span', toastEl).innerHTML = '';
+        $('span', toastEl).textContent = message;
+        if (link) {
+            const a = document.createElement('a');
+            a.href = link.href; a.textContent = link.label;
+            $('span', toastEl).appendChild(a);
+        }
+        $('i', toastEl).className = isError ? 'ri-error-warning-fill' : 'ri-checkbox-circle-fill';
+        toastEl.classList.toggle('is-error', isError);
+        toastEl.classList.add('is-visible');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove('is-visible'), 4200);
+    }
+
+    function flyToCart(img) {
+        const cart = $('#cartIcon');
+        if (!img || !cart || !hasGsap || reduced) return;
+        const from = img.getBoundingClientRect();
+        const to = cart.getBoundingClientRect();
+        const clone = img.cloneNode();
+        clone.className = 'fly-img';
+        Object.assign(clone.style, { left: from.left + 'px', top: from.top + 'px', width: from.width + 'px', height: from.height + 'px' });
+        document.body.appendChild(clone);
+        gsap.timeline({ onComplete: () => clone.remove() })
+            .to(clone, { duration: .35, scale: .8, ease: 'power2.out' })
+            .to(clone, {
+                duration: .9, ease: 'power3.inOut',
+                left: to.left + to.width / 2 - 20, top: to.top + to.height / 2 - 20, width: 40, height: 40, scale: 1, borderRadius: '50%', opacity: .6,
+            });
+    }
+
+    function initShop() {
+        document.addEventListener('submit', async (e) => {
+            const form = e.target.closest('.js-add-cart');
+            if (!form || !window.fetch) return;
+            e.preventDefault();
+            const btn = $('button[type=submit]', form);
+            btn && btn.classList.add('is-loading');
+            try {
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                    body: new FormData(form),
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) throw new Error(data.message || 'خطا در افزودن به سبد خرید');
+                const card = form.closest('.product-card');
+                flyToCart(card ? $('.product-card__media img', card) : $('#pdMain'));
+                setTimeout(() => {
+                    $$('.cart-count').forEach((c) => {
+                        c.dataset.count = data.count;
+                        c.textContent = faDigits(data.count);
+                        c.classList.remove('bump'); void c.offsetWidth; c.classList.add('bump');
+                    });
+                }, 900);
+                toast(data.message, false, { href: '/cart', label: 'مشاهده سبد' });
+            } catch (err) {
+                toast(err.message || 'خطایی رخ داد', true);
+            }
+            btn && btn.classList.remove('is-loading');
+        });
+
+        // علاقه‌مندی‌ها (ذخیره در مرورگر)
+        let favs = [];
+        try { favs = JSON.parse(localStorage.getItem('favs') || '[]'); } catch (e) {}
+        const sync = () => $$('.js-fav').forEach((b) => b.classList.toggle('is-active', favs.includes(b.dataset.id)));
+        sync();
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.js-fav');
+            if (!btn) return;
+            const id = btn.dataset.id;
+            favs = favs.includes(id) ? favs.filter((f) => f !== id) : [...favs, id];
+            try { localStorage.setItem('favs', JSON.stringify(favs)); } catch (err) {}
+            sync();
+            $('i', btn).className = btn.classList.contains('is-active') ? 'ri-heart-3-fill' : 'ri-heart-3-line';
+            if (hasGsap) gsap.fromTo(btn, { scale: .6 }, { scale: 1, duration: .6, ease: 'elastic.out(1,.4)' });
+            toast(btn.classList.contains('is-active') ? 'به علاقه‌مندی‌ها اضافه شد' : 'از علاقه‌مندی‌ها حذف شد');
+        });
+        $$('.js-fav.is-active i').forEach((i) => { i.className = 'ri-heart-3-fill'; });
+
+        // کنترل تعداد
+        $$('[data-qty]').forEach((box) => {
+            const input = $('input', box);
+            $$('[data-step]', box).forEach((b) => b.addEventListener('click', () => {
+                const min = parseInt(input.min || '0', 10);
+                input.value = Math.max(min, Math.min(99, (parseInt(input.value, 10) || 0) + parseInt(b.dataset.step, 10)));
+                if (box.hasAttribute('data-autosubmit')) box.submit();
+            }));
+            if (box.hasAttribute('data-autosubmit')) input.addEventListener('change', () => box.submit());
+        });
+
+        // گالری محصول
+        const main = $('#pdMain');
+        $$('.pd-gallery__thumbs button').forEach((b) => b.addEventListener('click', () => {
+            $$('.pd-gallery__thumbs button').forEach((x) => x.classList.toggle('is-active', x === b));
+            if (hasGsap) gsap.fromTo(main, { opacity: 0, scale: 1.05 }, { opacity: 1, scale: 1, duration: .6 });
+            main.src = b.dataset.src;
+        }));
+
+        // پیام‌های فلش
+        if (toastEl && (toastEl.dataset.flash || toastEl.dataset.flashError)) {
+            ready.then(() => setTimeout(() => toast(toastEl.dataset.flash || toastEl.dataset.flashError, !toastEl.dataset.flash), 400));
+        }
+    }
+
+    /* ---------------------------------------------------------------
+       تایم‌لاین و کلاژ تیم
+    --------------------------------------------------------------- */
+    function initTimeline() {
+        const steps = $$('[data-tl]');
+        steps.forEach((step) => step.addEventListener('mouseenter', () => steps.forEach((s) => s.classList.toggle('is-open', s === step))));
+        steps.forEach((step) => step.addEventListener('click', () => steps.forEach((s) => s.classList.toggle('is-open', s === step))));
+        if (!hasST || reduced || !steps.length) return;
+        steps.forEach((step, i) => {
+            gsap.fromTo(step, { clipPath: i % 2 ? 'inset(0 0 0 100%)' : 'inset(0 100% 0 0)' }, {
+                clipPath: 'inset(0 0% 0 0%)', duration: 1.2, ease: 'power4.inOut',
+                scrollTrigger: { trigger: step, start: 'top 88%' },
+            });
+            gsap.fromTo($('.tl-step__box', step), { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: .9, delay: .4, ease: 'power3.out', scrollTrigger: { trigger: step, start: 'top 88%' } });
+        });
+        $$('.tl-arrow').forEach((a) => gsap.fromTo(a, { scale: 0, rotate: -90 }, { scale: 1, rotate: 0, duration: .8, ease: 'back.out(2)', scrollTrigger: { trigger: a, start: 'top 90%' } }));
+        $$('[data-parallax-y]').forEach((el) => {
+            const sp = parseFloat(el.dataset.parallaxY) || .1;
+            gsap.fromTo(el, { y: sp * 260 }, { y: -sp * 120, ease: 'none', scrollTrigger: { trigger: el.closest('section'), start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
     }
 
     /* ---------------------------------------------------------------
@@ -724,6 +871,8 @@
         const wa = $('.whatsapp-float');
         const circle = toTop && $('circle', toTop);
         const reading = $('.reading-progress');
+        const indicator = $('.scroll-indicator span');
+        const topRect = toTop && $('rect', toTop);
         const article = $('[data-article]');
 
         const update = () => {
@@ -733,7 +882,9 @@
             if (toTop) {
                 toTop.classList.toggle('is-visible', window.scrollY > 600);
                 if (circle) circle.style.strokeDashoffset = 164 - 164 * p;
+                if (topRect) topRect.style.setProperty('--o', 164 - 164 * p);
             }
+            if (indicator) indicator.style.transform = `translateY(${p * (window.innerHeight - 90)}px)`;
             if (reading && article) {
                 const r = article.getBoundingClientRect();
                 const ap = Math.min(1, Math.max(0, -r.top / (r.height - window.innerHeight)));
@@ -804,6 +955,8 @@
     initHeader();
     initHero();
     initBlueprint();
+    initGridSpot();
+    initShop();
     initMarquee();
     initAccordion();
     initModals();
@@ -817,6 +970,7 @@
     ready.then(() => {
         initScrollAnimations();
         initHorizontalProjects();
+        initTimeline();
         if (hasST) {
             ScrollTrigger.refresh();
             window.addEventListener('load', () => ScrollTrigger.refresh());

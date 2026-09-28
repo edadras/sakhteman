@@ -9,7 +9,7 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    protected $fillable = ['name', 'email', 'password', 'avatar'];
+    protected $fillable = ['name', 'email', 'mobile', 'address', 'password', 'avatar'];
 
     protected $hidden = ['password', 'remember_token'];
 
@@ -18,6 +18,12 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
+    }
+
+    public function orders(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Order::class)->latest();
     }
 }

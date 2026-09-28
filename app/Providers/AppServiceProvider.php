@@ -31,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
         // تعداد پیام‌های خوانده‌نشده برای پنل
         View::composer('admin.layouts.app', function ($view) {
             $view->with('unreadCount', rescue(fn () => Message::where('is_read', false)->count(), 0, false));
+            $view->with('pendingOrders', rescue(fn () => \App\Models\Order::where('status', 'pending')->count(), 0, false));
         });
     }
 }

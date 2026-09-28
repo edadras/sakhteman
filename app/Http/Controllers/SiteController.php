@@ -6,6 +6,7 @@ use App\Models\Faq;
 use App\Models\Message;
 use App\Models\Partner;
 use App\Models\Post;
+use App\Models\Product;
 use App\Models\Project;
 use App\Models\ProjectCategory;
 use App\Models\Service;
@@ -36,6 +37,9 @@ class SiteController extends Controller
             'posts' => Post::active()->latestFirst()->take(3)->get(),
             'partners' => Partner::active()->ordered()->get(),
             'faqs' => Faq::active()->ordered()->take(5)->get(),
+            'products' => setting('shop_enabled', '1') === '1'
+                ? Product::active()->with('category')->where('is_featured', true)->ordered()->take(8)->get()
+                : collect(),
         ]);
     }
 
@@ -177,6 +181,10 @@ class SiteController extends Controller
         Service::active()->get()->each(fn ($s) => $urls->push(['loc' => $s->url, 'lastmod' => $s->updated_at, 'priority' => '0.7']));
         Project::active()->get()->each(fn ($p) => $urls->push(['loc' => $p->url, 'lastmod' => $p->updated_at, 'priority' => '0.8']));
         Post::active()->get()->each(fn ($p) => $urls->push(['loc' => $p->url, 'lastmod' => $p->updated_at, 'priority' => '0.6']));
+        if (setting('shop_enabled', '1') === '1') {
+            $urls->push(['loc' => route('shop.index'), 'priority' => '0.7']);
+            Product::active()->get()->each(fn ($p) => $urls->push(['loc' => $p->url, 'lastmod' => $p->updated_at, 'priority' => '0.6']));
+        }
 
         return response()->view('sitemap', ['urls' => $urls])->header('Content-Type', 'application/xml');
     }

@@ -25,16 +25,18 @@ class SettingController extends Controller
 
         $rules = [];
         foreach ($fields as $key => $field) {
-            $rules[$key] = $field['type'] === 'image'
-                ? 'nullable|file|mimes:jpg,jpeg,png,webp,gif,svg,ico,avif|max:6144'
-                : 'nullable|string|max:20000';
+            $rules[$key] = match ($field['type']) {
+                'image' => 'nullable|file|mimes:jpg,jpeg,png,webp,gif,svg,ico,avif|max:6144',
+                'file' => 'nullable|file|mimes:pdf,zip,rar,jpg,jpeg,png,webp|max:30720',
+                default => 'nullable|string|max:20000',
+            };
         }
         $request->validate($rules, [], collect($fields)->map(fn ($f) => $f['label'])->all());
 
         $current = Setting::allCached();
 
         foreach ($fields as $key => $field) {
-            if ($field['type'] === 'image') {
+            if (in_array($field['type'], ['image', 'file'], true)) {
                 if ($request->hasFile($key)) {
                     $this->deleteFile($current[$key] ?? null);
                     Setting::put($key, $request->file($key)->store('uploads/settings', 'public'));

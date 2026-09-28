@@ -1,7 +1,6 @@
-{{-- بنر صفحات داخلی: $title, $crumbs (آرایه label => url), $image اختیاری --}}
-<section class="page-hero">
-    <div class="page-hero__bg" data-parallax=".25" style="background-image:url('{{ $image ?? media_url(setting('page_banner'), asset('assets/img/demo/banner.jpg')) }}')"></div>
-    <div class="page-hero__grid"></div>
+{{-- بنر صفحات داخلی: $title, $crumbs (label => url), $image و $eyebrow اختیاری --}}
+<section class="page-hero grid-bg" data-grid-spot>
+    <div class="page-hero__img"><img src="{{ $image ?? media_url(setting('page_banner'), asset('assets/img/demo/banner.jpg')) }}" alt="" data-parallax=".2"></div>
     <div class="container">
         @isset($eyebrow)<span class="eyebrow">{{ $eyebrow }}</span>@endisset
         <h1>{{ $title }}</h1>

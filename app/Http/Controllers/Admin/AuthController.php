@@ -9,8 +9,12 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function showLogin()
+    public function showLogin(Request $request)
     {
+        if ($request->user()?->is_admin) {
+            return redirect()->route('admin.dashboard');
+        }
+
         return view('admin.auth.login');
     }
 
@@ -24,6 +28,13 @@ class AuthController extends Controller
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             throw ValidationException::withMessages([
                 'email' => 'ایمیل یا رمز عبور اشتباه است.',
+            ]);
+        }
+
+        if (! Auth::user()->is_admin) {
+            Auth::logout();
+            throw ValidationException::withMessages([
+                'email' => 'این حساب دسترسی به پنل مدیریت ندارد.',
             ]);
         }
 

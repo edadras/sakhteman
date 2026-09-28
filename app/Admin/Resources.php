@@ -5,6 +5,8 @@ namespace App\Admin;
 use App\Models\Faq;
 use App\Models\Partner;
 use App\Models\Post;
+use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Models\Project;
 use App\Models\ProjectCategory;
 use App\Models\Service;
@@ -44,10 +46,14 @@ class Resources
                     'is_active' => ['label' => 'وضعیت', 'type' => 'toggle'],
                 ],
                 'fields' => [
-                    'subtitle' => ['label' => 'زیرعنوان کوچک', 'type' => 'text', 'rules' => 'nullable|string|max:190', 'col' => 'half'],
-                    'title' => ['label' => 'عنوان اصلی', 'type' => 'text', 'rules' => 'required|string|max:190', 'col' => 'half', 'help' => 'برای شکستن خط از | استفاده کنید'],
+                    'title' => ['label' => 'عنوان اصلی', 'type' => 'text', 'rules' => 'required|string|max:190', 'col' => 'half', 'help' => 'مثلا: پروژه برج پارس جردن — برای شکستن خط از | استفاده کنید'],
+                    'tags' => ['label' => 'برچسب‌ها', 'type' => 'text', 'rules' => 'nullable|string|max:190', 'col' => 'half', 'help' => 'با کاما جدا کنید؛ مثلا: ساخت و ساز، انبوه سازی'],
+                    'subtitle' => ['label' => 'زیرعنوان کوچک (اختیاری)', 'type' => 'text', 'rules' => 'nullable|string|max:190', 'col' => 'half'],
                     'description' => ['label' => 'توضیحات', 'type' => 'textarea', 'rules' => 'nullable|string|max:1000'],
-                    'image' => ['label' => 'تصویر پس‌زمینه', 'type' => 'image', 'help' => 'ابعاد پیشنهادی ۱۹۲۰×۱۰۸۰'],
+                    'image' => ['label' => 'تصویر پروژه', 'type' => 'image', 'col' => 'half', 'help' => 'تصویر عمودی یا PNG بدون پس‌زمینه بهترین نتیجه را دارد'],
+                    'designer_avatar' => ['label' => 'عکس طراح / مجری', 'type' => 'image', 'col' => 'half'],
+                    'designer_name' => ['label' => 'نام طراح / مجری', 'type' => 'text', 'rules' => 'nullable|string|max:120', 'col' => 'half'],
+                    'designer_role' => ['label' => 'سمت طراح', 'type' => 'text', 'rules' => 'nullable|string|max:120', 'col' => 'half', 'help' => 'مثلا: طراح و مجری ساخت'],
                     'button_text' => ['label' => 'متن دکمه', 'type' => 'text', 'rules' => 'nullable|string|max:60', 'col' => 'half'],
                     'button_link' => ['label' => 'لینک دکمه', 'type' => 'text', 'rules' => 'nullable|string|max:255', 'col' => 'half', 'dir' => 'ltr'],
                     'sort' => $sort,
@@ -136,6 +142,7 @@ class Resources
                     'location' => ['label' => 'موقعیت', 'type' => 'text', 'rules' => 'nullable|string|max:190', 'col' => 'third'],
                     'area' => ['label' => 'متراژ', 'type' => 'text', 'rules' => 'nullable|string|max:60', 'col' => 'third'],
                     'floors' => ['label' => 'تعداد طبقات', 'type' => 'text', 'rules' => 'nullable|string|max:60', 'col' => 'third'],
+                    'units' => ['label' => 'تعداد واحدها', 'type' => 'text', 'rules' => 'nullable|string|max:60', 'col' => 'third'],
                     'cover' => ['label' => 'تصویر شاخص', 'type' => 'image', 'col' => 'half'],
                     'gallery' => ['label' => 'گالری تصاویر', 'type' => 'gallery', 'col' => 'half'],
                     'summary' => ['label' => 'خلاصه', 'type' => 'textarea', 'rules' => 'nullable|string|max:800'],
@@ -172,6 +179,70 @@ class Resources
                     'excerpt' => ['label' => 'خلاصه', 'type' => 'textarea', 'rules' => 'nullable|string|max:800'],
                     'body' => ['label' => 'متن مقاله', 'type' => 'editor', 'rules' => 'nullable|string'],
                     'is_active' => ['label' => 'منتشر شود', 'type' => 'toggle', 'default' => true, 'col' => 'third'],
+                ],
+            ],
+
+
+            'product-categories' => [
+                'model' => ProductCategory::class,
+                'label' => 'دسته‌بندی محصولات',
+                'singular' => 'دسته‌بندی',
+                'icon' => 'ri-price-tag-3-line',
+                'group' => 'فروشگاه',
+                'slug' => 'name',
+                'search' => ['name'],
+                'counts' => ['products'],
+                'columns' => [
+                    'name' => ['label' => 'نام'],
+                    'products_count' => ['label' => 'تعداد محصول', 'type' => 'number'],
+                    'sort' => ['label' => 'ترتیب', 'type' => 'number'],
+                    'is_active' => ['label' => 'وضعیت', 'type' => 'toggle'],
+                ],
+                'fields' => [
+                    'name' => ['label' => 'نام دسته', 'type' => 'text', 'rules' => 'required|string|max:120', 'col' => 'half'],
+                    'slug' => ['label' => 'نامک', 'type' => 'text', 'rules' => 'nullable|string|max:120', 'col' => 'half', 'dir' => 'ltr'],
+                    'sort' => $sort,
+                    'is_active' => $active,
+                ],
+            ],
+
+            'products' => [
+                'model' => Product::class,
+                'label' => 'محصولات',
+                'singular' => 'محصول',
+                'icon' => 'ri-shopping-bag-3-line',
+                'group' => 'فروشگاه',
+                'slug' => 'title',
+                'search' => ['title', 'sku', 'summary'],
+                'with' => ['category'],
+                'filters' => ['category_id' => 'دسته‌بندی'],
+                'columns' => [
+                    'image' => ['label' => 'تصویر', 'type' => 'image'],
+                    'title' => ['label' => 'نام محصول'],
+                    'category.name' => ['label' => 'دسته'],
+                    'price' => ['label' => 'قیمت (تومان)', 'type' => 'price'],
+                    'sale_price' => ['label' => 'قیمت با تخفیف', 'type' => 'price'],
+                    'in_stock' => ['label' => 'موجود', 'type' => 'toggle'],
+                    'is_active' => ['label' => 'نمایش', 'type' => 'toggle'],
+                ],
+                'fields' => [
+                    'title' => ['label' => 'نام محصول', 'type' => 'text', 'rules' => 'required|string|max:190', 'col' => 'half'],
+                    'slug' => ['label' => 'نامک', 'type' => 'text', 'rules' => 'nullable|string|max:190', 'col' => 'half', 'dir' => 'ltr'],
+                    'category_id' => ['label' => 'دسته‌بندی', 'type' => 'select', 'rules' => 'nullable|exists:product_categories,id', 'col' => 'third',
+                        'options' => fn () => ProductCategory::ordered()->pluck('name', 'id')->all()],
+                    'price' => ['label' => 'قیمت (تومان)', 'type' => 'price', 'rules' => 'nullable|integer|min:0', 'col' => 'third', 'help' => 'خالی = «تماس بگیرید»'],
+                    'sale_price' => ['label' => 'قیمت پس از تخفیف (تومان)', 'type' => 'price', 'rules' => 'nullable|integer|min:0', 'col' => 'third'],
+                    'sku' => ['label' => 'کد محصول', 'type' => 'text', 'rules' => 'nullable|string|max:60', 'col' => 'third', 'dir' => 'ltr'],
+                    'price_from' => ['label' => 'نمایش قیمت با «از» (شروع قیمت)', 'type' => 'toggle', 'default' => false, 'col' => 'third'],
+                    'in_stock' => ['label' => 'موجود در انبار', 'type' => 'toggle', 'default' => true, 'col' => 'third'],
+                    'image' => ['label' => 'تصویر اصلی', 'type' => 'image', 'col' => 'half'],
+                    'gallery' => ['label' => 'گالری تصاویر', 'type' => 'gallery', 'col' => 'half'],
+                    'summary' => ['label' => 'توضیح کوتاه', 'type' => 'textarea', 'rules' => 'nullable|string|max:800'],
+                    'specs' => ['label' => 'مشخصات فنی', 'type' => 'textarea', 'rules' => 'nullable|string|max:3000', 'help' => 'هر خط یک مشخصه به شکل «عنوان: مقدار» — مثلا «جنس: فلز»'],
+                    'body' => ['label' => 'توضیحات کامل', 'type' => 'editor', 'rules' => 'nullable|string'],
+                    'is_featured' => ['label' => 'نمایش در صفحه اصلی', 'type' => 'toggle', 'default' => true, 'col' => 'third'],
+                    'sort' => $sort,
+                    'is_active' => $active,
                 ],
             ],
 
@@ -225,11 +296,12 @@ class Resources
 
             'steps' => [
                 'model' => Step::class,
-                'label' => 'مراحل کار',
+                'label' => 'تایم‌لاین پروژه',
                 'singular' => 'مرحله',
                 'icon' => 'ri-route-line',
                 'group' => 'صفحه اصلی',
                 'columns' => [
+                    'image' => ['label' => 'تصویر', 'type' => 'image'],
                     'icon' => ['label' => 'آیکن', 'type' => 'icon'],
                     'title' => ['label' => 'عنوان'],
                     'sort' => ['label' => 'ترتیب', 'type' => 'number'],
@@ -238,6 +310,7 @@ class Resources
                 'fields' => [
                     'title' => ['label' => 'عنوان مرحله', 'type' => 'text', 'rules' => 'required|string|max:120', 'col' => 'half'],
                     'icon' => ['label' => 'آیکن', 'type' => 'icon', 'rules' => 'nullable|string|max:80', 'col' => 'half'],
+                    'image' => ['label' => 'تصویر مرحله', 'type' => 'image'],
                     'description' => ['label' => 'توضیح', 'type' => 'textarea', 'rules' => 'nullable|string|max:600'],
                     'sort' => $sort,
                     'is_active' => $active,

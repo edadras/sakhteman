@@ -14,7 +14,7 @@
         <h1><i class="{{ $def['icon'] }}"></i>{{ $item->exists ? 'ویرایش '.$def['singular'] : 'افزودن '.$def['singular'].' جدید' }}</h1>
         <p><a href="{{ route('admin.resources.index', $def['key']) }}" class="text-muted"><i class="ri-arrow-right-line"></i> بازگشت به {{ $def['label'] }}</a></p>
     </div>
-    @if ($item->exists && in_array($def['key'], ['services', 'projects', 'posts']))
+    @if ($item->exists && in_array($def['key'], ['services', 'projects', 'posts', 'products']))
         <a href="{{ $item->url }}" target="_blank" class="btn btn-light"><i class="ri-eye-line"></i>مشاهده در سایت</a>
     @endif
 </div>

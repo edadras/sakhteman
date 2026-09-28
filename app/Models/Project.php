@@ -11,8 +11,8 @@ class Project extends Model
     use Publishable;
 
     public const STATUSES = [
-        'completed' => 'تکمیل شده',
-        'in_progress' => 'در حال اجرا',
+        'completed' => 'آماده تحویل',
+        'in_progress' => 'در حال ساخت',
         'design' => 'در مرحله طراحی',
     ];
 

@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use App\Models\Faq;
 use App\Models\Partner;
 use App\Models\Post;
+use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Models\Project;
 use App\Models\ProjectCategory;
 use App\Models\Service;
@@ -33,6 +35,7 @@ class ContentSeeder extends Seeder
         $this->services();
         $this->projects();
         $this->posts();
+        $this->products();
         $this->people();
         $this->misc();
     }
@@ -41,7 +44,6 @@ class ContentSeeder extends Seeder
     {
         $settings = [
             'site_title' => 'گروه ساختمانی طاهورنیان',
-            'site_tagline' => 'طراحی، ساخت و اجرای پروژه‌های ساختمانی',
             'established_year' => '۱۳۸۴',
             'experience_years' => '20',
             'working_hours' => 'شنبه تا پنجشنبه ۸:۰۰ تا ۱۸:۰۰',
@@ -78,6 +80,17 @@ class ContentSeeder extends Seeder
             'ceo_name' => 'مهندس علی طاهورنیان',
             'footer_text' => 'گروه ساختمانی طاهورنیان، مجری تخصصی طراحی و ساخت پروژه‌های مسکونی، تجاری و اداری با تعهد به کیفیت و زمان.',
             'copyright' => 'تمامی حقوق این وب‌سایت متعلق به گروه ساختمانی طاهورنیان است.',
+            'site_tagline' => 'ساخت و انبوه سازی خانه های لوکس',
+            'catalogue_title' => 'کاتالوگ پروژه ها',
+            'catalogue_subtitle' => 'Projects catalogue',
+            'catalogue_cover' => $this->img('p5'),
+            'consult_title' => 'درخواست مشاوره',
+            'consult_subtitle' => 'Request for advice',
+            'consult_image' => $this->img('consult'),
+            'team_text' => 'طاهورنیان برای تحقق رویاهای معماری شما تلاش می کند!',
+            'team_button_text' => 'فرصت‌های همکاری',
+            'team_button_link' => '/contact',
+            'shop_enabled' => '1',
         ];
 
         foreach ($settings as $key => $value) {
@@ -88,13 +101,19 @@ class ContentSeeder extends Seeder
     protected function slides(): void
     {
         $slides = [
-            ['subtitle' => 'طراحی و ساخت حرفه‌ای', 'title' => 'ساختن آینده|با دقت و اعتماد', 'description' => 'از نخستین طرح روی کاغذ تا تحویل کلید، همراه شما هستیم.', 'image' => $this->img('hero-1')],
-            ['subtitle' => 'بیش از دو دهه تجربه', 'title' => 'معماری که|ماندگار می‌شود', 'description' => 'اجرای پروژه‌های مسکونی، تجاری و اداری با بالاترین استانداردها.', 'image' => $this->img('hero-2')],
-            ['subtitle' => 'کیفیت بی‌چون‌وچرا', 'title' => 'خانه رویایی خود را|با ما بسازید', 'description' => 'طراحی خلاقانه، مصالح مرغوب و تحویل به‌موقع.', 'image' => $this->img('hero-3')],
+            ['title' => 'پروژه برج پارس جردن', 'tags' => 'ساخت و ساز، انبوه سازی', 'description' => 'برج لوکس اداری تجاری پارس با مساحت ۹۰۵ متر، زیربنای ۱۷۰۰۰ متر، ۲۵ طبقه؛ ۲۰ طبقه روی زمین و ۵ طبقه زیرزمین', 'image' => $this->img('hero-2'), 'designer_avatar' => $this->img('team-10')],
+            ['title' => 'ویلای مدرن لواسان', 'tags' => 'طراحی معماری، ساخت ویلا', 'description' => 'ویلای سه طبقه با نمای شیشه‌ای، استخر روباز و طراحی داخلی لوکس در زمینی به مساحت ۱۲۰۰ متر', 'image' => $this->img('p2'), 'designer_avatar' => $this->img('team-1')],
+            ['title' => 'مجتمع تجاری آفتاب', 'tags' => 'تجاری، در حال ساخت', 'description' => 'مجتمع تجاری ۸ طبقه با ۱۲۰ واحد تجاری، فودکورت و پارکینگ طبقاتی در قلب شهر کرج', 'image' => $this->img('p3'), 'designer_avatar' => $this->img('team-3')],
         ];
 
         foreach ($slides as $i => $slide) {
-            Slide::create($slide + ['button_text' => 'مشاهده پروژه‌ها', 'button_link' => '/projects', 'sort' => $i]);
+            Slide::create($slide + [
+                'button_text' => 'درباره این پروژه',
+                'button_link' => '/projects',
+                'designer_name' => 'علی طاهورنیان',
+                'designer_role' => 'طراح و مجری ساخت',
+                'sort' => $i,
+            ]);
         }
     }
 
@@ -132,7 +151,7 @@ class ContentSeeder extends Seeder
         ]);
 
         $projects = [
-            ['title' => 'برج مسکونی الهیه', 'cat' => 'مسکونی', 'cover' => 'p1', 'location' => 'تهران، الهیه', 'area' => '۱۲٬۵۰۰ متر مربع', 'floors' => '۱۴ طبقه', 'year' => '۱۴۰۲', 'status' => 'completed'],
+            ['title' => 'برج مسکونی الهیه', 'cat' => 'مسکونی', 'cover' => 'p1', 'location' => 'تهران، الهیه', 'area' => '۱۲٬۵۰۰ متر مربع', 'floors' => '۱۴ طبقه', 'units' => '۲۸ واحد', 'year' => '۱۴۰۲', 'status' => 'completed'],
             ['title' => 'ویلای مدرن لواسان', 'cat' => 'ویلایی', 'cover' => 'p2', 'location' => 'لواسان', 'area' => '۸۵۰ متر مربع', 'floors' => '۳ طبقه', 'year' => '۱۴۰۱', 'status' => 'completed'],
             ['title' => 'مجتمع تجاری آفتاب', 'cat' => 'تجاری', 'cover' => 'p3', 'location' => 'کرج، عظیمیه', 'area' => '۲۲٬۰۰۰ متر مربع', 'floors' => '۸ طبقه', 'year' => '۱۴۰۳', 'status' => 'in_progress'],
             ['title' => 'ساختمان اداری نگین', 'cat' => 'اداری', 'cover' => 'p4', 'location' => 'تهران، ونک', 'area' => '۶٬۴۰۰ متر مربع', 'floors' => '۱۰ طبقه', 'year' => '۱۴۰۰', 'status' => 'completed'],
@@ -155,6 +174,7 @@ class ContentSeeder extends Seeder
                 'location' => $p['location'],
                 'area' => $p['area'],
                 'floors' => $p['floors'],
+                'units' => $p['units'] ?? fa_num(rand(4, 40)).' واحد',
                 'year' => $p['year'],
                 'status' => $p['status'],
                 'summary' => 'طراحی و اجرای کامل پروژه '.$p['title'].' با رویکرد معماری معاصر، کیفیت ساخت بالا و توجه ویژه به جزئیات.',
@@ -195,6 +215,43 @@ class ContentSeeder extends Seeder
         }
     }
 
+    protected function products(): void
+    {
+        $cats = collect(['دکوری', 'پذیرایی', 'نشیمن', 'روشنایی'])->mapWithKeys(fn ($name, $i) => [
+            $name => ProductCategory::create(['name' => $name, 'slug' => persian_slug($name), 'sort' => $i])->id,
+        ]);
+
+        $items = [
+            ['title' => 'مبل تک‌نفره طرح اسکاندیناوی', 'cat' => 'نشیمن', 'image' => 'pr-1', 'price' => 18500000, 'sale' => null],
+            ['title' => 'ست قاب دیواری هنری', 'cat' => 'دکوری', 'image' => 'pr-2', 'price' => 2400000, 'sale' => 1790000],
+            ['title' => 'صندلی کلاسیک کاپیتونی', 'cat' => 'پذیرایی', 'image' => 'pr-6', 'price' => 9800000, 'sale' => null],
+            ['title' => 'کاناپه مخملی سه‌نفره', 'cat' => 'نشیمن', 'image' => 'pr-7', 'price' => 42000000, 'sale' => 37500000],
+            ['title' => 'لوستر آویز مسی', 'cat' => 'روشنایی', 'image' => 'pr-8', 'price' => 6350000, 'sale' => null, 'from' => true],
+            ['title' => 'صندلی مدرن پایه چوبی', 'cat' => 'پذیرایی', 'image' => 'pr-10', 'price' => 3200000, 'sale' => 2690000],
+            ['title' => 'گلدان سرامیکی با گل خشک', 'cat' => 'دکوری', 'image' => 'pr-12', 'price' => 1350000, 'sale' => null, 'from' => true],
+            ['title' => 'ست دکوراسیون نشیمن بوهو', 'cat' => 'دکوری', 'image' => 'pr-3', 'price' => null, 'sale' => null],
+        ];
+
+        foreach ($items as $i => $p) {
+            Product::create([
+                'category_id' => $cats[$p['cat']],
+                'title' => $p['title'],
+                'slug' => persian_slug($p['title']),
+                'sku' => 'TH-'.(1001 + $i),
+                'price' => $p['price'],
+                'sale_price' => $p['sale'],
+                'price_from' => $p['from'] ?? false,
+                'summary' => 'محصولی باکیفیت و خوش‌طرح برای خانه‌های لوکس؛ انتخاب شده توسط طراحان داخلی طاهورنیان.',
+                'specs' => "جنس: چوب راش و پارچه مخمل\nابعاد: ۸۰ × ۷۵ × ۹۰ سانتی‌متر\nرنگ: مطابق تصویر\nگارانتی: ۱۲ ماه",
+                'body' => '<p>این محصول با بهترین متریال و دقت بالا تولید شده و به زیبایی با دکوراسیون مدرن و کلاسیک هماهنگ می‌شود. تمامی محصولات فروشگاه طاهورنیان با ضمانت اصالت و کیفیت ارسال می‌شوند.</p>',
+                'image' => $this->img($p['image']),
+                'gallery' => [$this->img($p['image']), $this->img('pr-5'), $this->img('pr-11')],
+                'is_featured' => true,
+                'sort' => $i,
+            ]);
+        }
+    }
+
     protected function people(): void
     {
         $team = [
@@ -202,6 +259,10 @@ class ContentSeeder extends Seeder
             ['name' => 'مهندس سارا محمدی', 'position' => 'مدیر طراحی معماری', 'photo' => 'team-2'],
             ['name' => 'مهندس رضا کریمی', 'position' => 'مدیر اجرایی پروژه‌ها', 'photo' => 'team-3'],
             ['name' => 'مهندس مریم احمدی', 'position' => 'طراح داخلی ارشد', 'photo' => 'team-4'],
+            ['name' => 'مهندس نگار رحیمی', 'position' => 'مهندس سازه', 'photo' => 'team-5'],
+            ['name' => 'مهندس امیر حسینی', 'position' => 'سرپرست کارگاه', 'photo' => 'team-6'],
+            ['name' => 'مهندس الهام نوری', 'position' => 'کارشناس فروش', 'photo' => 'team-9'],
+            ['name' => 'مهندس بهزاد مرادی', 'position' => 'مدیر مالی پروژه‌ها', 'photo' => 'team-8'],
         ];
         foreach ($team as $i => $m) {
             TeamMember::create([
@@ -237,10 +298,11 @@ class ContentSeeder extends Seeder
         }
 
         foreach ([
-            ['title' => 'مشاوره و بررسی', 'icon' => 'ri-chat-smile-2-line', 'description' => 'جلسه مشاوره رایگان، بازدید از محل و شناخت دقیق نیازها و بودجه کارفرما.'],
-            ['title' => 'طراحی و برنامه‌ریزی', 'icon' => 'ri-draft-line', 'description' => 'تهیه طرح معماری، مدل سه‌بعدی، نقشه‌های اجرایی و زمان‌بندی دقیق پروژه.'],
-            ['title' => 'اجرا و نظارت', 'icon' => 'ri-hammer-line', 'description' => 'اجرای پروژه توسط تیم متخصص با نظارت مستمر مهندسی و گزارش‌دهی منظم.'],
-            ['title' => 'تحویل و پشتیبانی', 'icon' => 'ri-key-2-line', 'description' => 'تحویل کلید به همراه ضمانت‌نامه کیفیت و خدمات پس از تحویل.'],
+            ['title' => 'مشاوره اولیه', 'icon' => 'ri-chat-smile-2-line', 'image' => $this->img('st-consult'), 'description' => 'جلسه مشاوره رایگان، بازدید از محل و شناخت دقیق نیازها و بودجه کارفرما.'],
+            ['title' => 'طراحی مفهومی', 'icon' => 'ri-draft-line', 'image' => $this->img('about-1'), 'description' => 'تهیه طرح معماری، مدل سه‌بعدی و نقشه‌های اجرایی متناسب با سلیقه شما.'],
+            ['title' => 'برآورد هزینه‌ها', 'icon' => 'ri-calculator-line', 'image' => $this->img('st-cost'), 'description' => 'برآورد دقیق و شفاف هزینه‌ها و زمان‌بندی مرحله به مرحله پروژه.'],
+            ['title' => 'شروع عملیات اجرایی', 'icon' => 'ri-hammer-line', 'image' => $this->img('p8'), 'description' => 'اجرای پروژه توسط تیم متخصص با نظارت مستمر مهندسی و گزارش‌دهی منظم.'],
+            ['title' => 'تکمیل و تحویل پروژه', 'icon' => 'ri-key-2-line', 'image' => $this->img('p1'), 'description' => 'تحویل کلید به همراه ضمانت‌نامه کیفیت و خدمات پس از تحویل.'],
         ] as $i => $s) {
             Step::create($s + ['sort' => $i]);
         }

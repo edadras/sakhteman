@@ -13,7 +13,7 @@
     <title>{{ $pageTitle ? $pageTitle.' | '.$siteTitle : $siteTitle.' | '.setting('site_tagline') }}</title>
     <meta name="description" content="{{ $metaDescription }}">
     <meta name="keywords" content="{{ setting('meta_keywords') }}">
-    <meta name="theme-color" content="#0c0d0f">
+    <meta name="theme-color" content="#0e1e21">
     <link rel="canonical" href="{{ url()->current() }}">
 
     <meta property="og:type" content="website">
@@ -55,8 +55,9 @@
     <div class="preloader" aria-hidden="true">
         <div class="preloader__inner">
             <svg class="preloader__logo" viewBox="0 0 64 64" fill="none">
-                <path d="M8 56V26L32 8l24 18v30H40V36H24v20z" stroke="#c9a15b" stroke-width="2.5" stroke-linejoin="round"/>
-                <path d="M32 8v48" stroke="#e8c887" stroke-width="1.5"/>
+                <path d="M6 30 32 12l26 18" stroke="#fbb12e" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+                <path d="M6 42 32 24l26 18" stroke="#4f9a53" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+                <path d="M6 54 32 36l26 18" stroke="#6cc070" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
             </svg>
             <div class="preloader__count">۰</div>
             <div class="preloader__title">{{ $siteTitle }}</div>
@@ -68,6 +69,8 @@
     <div class="page-transition" aria-hidden="true"><span></span><span></span><span></span></div>
     <div class="cursor" aria-hidden="true"><span class="cursor__text"></span></div>
     <div class="cursor-dot" aria-hidden="true"></div>
+    <div class="scroll-indicator" aria-hidden="true"><span></span></div>
+    <div class="site-toast" role="status" aria-live="polite" data-flash="{{ session('success') }}" data-flash-error="{{ session('error') }}"><i class="ri-checkbox-circle-fill"></i><span></span></div>
     @stack('before_header')
 
     @include('partials.header')
@@ -80,7 +83,7 @@
 
     {{-- دکمه‌های شناور --}}
     <button class="to-top" type="button" aria-label="بازگشت به بالا">
-        <svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="26"/></svg>
+        <svg viewBox="0 0 56 56"><rect x="2" y="2" width="52" height="52" rx="17" pathLength="164" style="fill:none;stroke:var(--amber);stroke-width:3;stroke-dasharray:164;stroke-dashoffset:var(--o,164)"/></svg>
         <i class="ri-arrow-up-line"></i>
     </button>
     @if (setting('whatsapp'))

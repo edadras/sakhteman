@@ -142,11 +142,20 @@ class ResourceController extends Controller
      */
     protected function payload(Request $request, array $def, Model $item): array
     {
+        // اعداد فارسی و جداکننده هزارگان را قبل از اعتبارسنجی حذف می‌کنیم
+        foreach ($def['fields'] as $name => $field) {
+            if (in_array($field['type'] ?? null, ['number', 'price'], true) && $request->filled($name)) {
+                $request->merge([$name => preg_replace('/[^\d]/', '', en_num((string) $request->input($name)))]);
+            }
+        }
+
         $rules = [];
         foreach ($def['fields'] as $name => $field) {
             $type = $field['type'] ?? 'text';
             if ($type === 'image') {
                 $rules[$name] = 'nullable|file|mimes:jpg,jpeg,png,webp,gif,svg,avif|max:6144';
+            } elseif ($type === 'file') {
+                $rules[$name] = 'nullable|file|mimes:pdf,zip,rar,jpg,jpeg,png,webp|max:30720';
             } elseif ($type === 'gallery') {
                 $rules[$name.'_new'] = 'nullable|array';
                 $rules[$name.'_new.*'] = 'file|mimes:jpg,jpeg,png,webp,gif,avif|max:6144';
@@ -172,6 +181,7 @@ class ResourceController extends Controller
                     break;
 
                 case 'image':
+                case 'file':
                     if ($request->hasFile($name)) {
                         $this->deleteFile($item->{$name});
                         $data[$name] = $request->file($name)->store($folder, 'public');
@@ -197,7 +207,9 @@ class ResourceController extends Controller
                     break;
 
                 case 'number':
-                    $data[$name] = $request->filled($name) ? (int) en_num($request->input($name)) : ($field['default'] ?? 0);
+                case 'price':
+                    $raw = preg_replace('/[^\d]/', '', en_num((string) $request->input($name)));
+                    $data[$name] = $raw !== '' ? (int) $raw : ($field['default'] ?? null);
                     break;
 
                 case 'select':
@@ -232,7 +244,7 @@ class ResourceController extends Controller
     protected function deleteItem(array $def, Model $item): void
     {
         foreach ($def['fields'] as $name => $field) {
-            if (($field['type'] ?? null) === 'image') {
+            if (in_array($field['type'] ?? null, ['image', 'file'], true)) {
                 $this->deleteFile($item->{$name});
             }
             if (($field['type'] ?? null) === 'gallery') {

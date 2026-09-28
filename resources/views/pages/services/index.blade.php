@@ -7,17 +7,11 @@
 
 <section class="section">
     <div class="container">
-        <div class="section-head section-head--center">
-            <div class="section-head__text">
-                <span class="eyebrow">خدمات تخصصی</span>
-                <h2 class="section-title" data-split>هر آنچه برای <em>ساختن</em> نیاز دارید</h2>
-                <p data-reveal>از طراحی مفهومی تا اجرای کامل و خدمات پس از تحویل، همه را زیر یک سقف ارائه می‌دهیم.</p>
-            </div>
-        </div>
+        @include('partials.sec-head', ['title' => 'خدمات تخصصی', 'en' => 'Our services', 'icon' => 'ri-building-3-line', 'desc' => 'از طراحی مفهومی تا اجرای کامل و خدمات پس از تحویل، همه را زیر یک سقف ارائه می‌دهیم.'])
         @if ($services->count())
             <div class="services-grid" data-stagger=".1">
-                @foreach ($services as $i => $service)
-                    @include('partials.service-card', ['service' => $service, 'index' => $i])
+                @foreach ($services as $service)
+                    @include('partials.service-card', ['service' => $service])
                 @endforeach
             </div>
         @else
@@ -26,7 +20,7 @@
     </div>
 </section>
 
-@include('partials.process', ['class' => 'section--dark2'])
+@include('partials.timeline')
 @include('partials.faq')
 @include('partials.cta')
 @endsection

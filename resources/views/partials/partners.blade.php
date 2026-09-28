@@ -1,14 +1,20 @@
 @if ($partners->count())
-<section class="partners marquee" data-marquee="50" data-marquee-reverse style="border:0;padding:70px 0">
-    <div class="marquee__track">
-        <div class="marquee__group">
-            @foreach ($partners as $partner)
-                @if ($partner->url)
-                    <a class="partner-logo" href="{{ $partner->url }}" target="_blank" rel="noopener" title="{{ $partner->name }}"><img src="{{ media_url($partner->logo) }}" alt="{{ $partner->name }}" loading="lazy"></a>
-                @else
-                    <span class="partner-logo" title="{{ $partner->name }}"><img src="{{ media_url($partner->logo) }}" alt="{{ $partner->name }}" loading="lazy"></span>
-                @endif
-            @endforeach
+<section class="section">
+    <div class="container">
+        @include('partials.hang-head', ['title' => 'افتخارات همکاری', 'en' => 'Partnership honors', 'icon' => 'ri-user-star-line'])
+        <div class="partners-box">
+            <div class="partners-grid" data-stagger=".06">
+                @foreach ($partners as $partner)
+                    <div class="partner">
+                        @if ($partner->url)
+                            <a href="{{ $partner->url }}" target="_blank" rel="noopener" title="{{ $partner->name }}"><img src="{{ media_url($partner->logo) }}" alt="{{ $partner->name }}" loading="lazy"></a>
+                        @else
+                            <img src="{{ media_url($partner->logo) }}" alt="{{ $partner->name }}" title="{{ $partner->name }}" loading="lazy">
+                        @endif
+                        <span class="partner-marker"></span>
+                    </div>
+                @endforeach
+            </div>
         </div>
     </div>
 </section>

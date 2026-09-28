@@ -2,170 +2,108 @@
 
 @section('content')
 
-{{-- ============ هیرو ============ --}}
-<section class="hero">
-    <canvas class="hero-canvas" aria-hidden="true"></canvas>
-    <div class="swiper">
-        <div class="swiper-wrapper">
-            @forelse ($slides as $slide)
-                <div class="swiper-slide">
-                    <div class="hero-slide">
-                        <div class="hero-slide__bg" style="background-image:url('{{ media_url($slide->image, asset('assets/img/demo/hero-1.jpg')) }}')"></div>
-                        <div class="container">
+{{-- ============ هیرو: پروژه‌های ویژه ============ --}}
+<section class="hero grid-bg" data-grid-spot>
+    <div class="container">
+        <div class="swiper">
+            <div class="swiper-wrapper">
+                @forelse ($slides as $slide)
+                    <div class="swiper-slide">
+                        <div class="hero-slide">
                             <div class="hero-slide__content">
-                                @if ($slide->subtitle)<span class="hero-slide__sub">{{ $slide->subtitle }}</span>@endif
+                                @if ($slide->tags)
+                                    <div class="hero-tags">
+                                        @foreach (array_filter(array_map('trim', preg_split('/[,،]/u', $slide->tags))) as $tag)
+                                            <span>{{ $tag }}</span>
+                                        @endforeach
+                                    </div>
+                                @endif
                                 <h{{ $loop->first ? '1' : '2' }} class="hero-slide__title">
                                     @foreach (explode('|', $slide->title) as $line)
                                         <span class="line"><span>{{ trim($line) }}</span></span>
                                     @endforeach
                                 </h{{ $loop->first ? '1' : '2' }}>
-                                @if ($slide->description)<p class="hero-slide__desc">{{ $slide->description }}</p>@endif
+                                @if ($slide->designer_name)
+                                    <div class="hero-designer">
+                                        @if ($slide->designer_avatar)<img src="{{ media_url($slide->designer_avatar) }}" alt="{{ $slide->designer_name }}">@endif
+                                        <strong>{{ $slide->designer_name }}</strong>
+                                        @if ($slide->designer_role)<span>{{ $slide->designer_role }}</span>@endif
+                                    </div>
+                                @endif
+                                @if ($slide->description)<p class="hero-slide__desc">{{ fa_num($slide->description) }}</p>@endif
                                 <div class="hero-slide__actions">
                                     @if ($slide->button_text)
-                                        <a href="{{ $slide->button_link ?: route('projects.index') }}" class="btn" data-magnetic=".2"><span>{{ $slide->button_text }}</span><i class="ri-arrow-left-up-line"></i></a>
+                                        <a href="{{ $slide->button_link ?: route('projects.index') }}" class="btn" data-magnetic=".2">{{ $slide->button_text }}</a>
                                     @endif
-                                    <a href="{{ route('contact') }}" class="btn btn--outline"><span>درخواست مشاوره</span><i class="ri-phone-line"></i></a>
+                                    <a href="{{ route('contact') }}" class="btn btn--ghost">مشاوره رایگان <i class="ri-phone-line"></i></a>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <div class="swiper-slide">
-                    <div class="hero-slide">
-                        <div class="hero-slide__bg" style="background-image:url('{{ asset('assets/img/demo/hero-1.jpg') }}')"></div>
-                        <div class="container">
-                            <div class="hero-slide__content">
-                                <span class="hero-slide__sub">{{ setting('site_tagline') }}</span>
-                                <h1 class="hero-slide__title"><span class="line"><span>{{ setting('site_title', 'طاهورنیان') }}</span></span></h1>
+                            <div class="hero-slide__media">
+                                <span class="hero-ring hero-ring--1"></span>
+                                <span class="hero-ring hero-ring--2"></span>
+                                <span class="hero-diamond"></span>
+                                <div class="hero-arch"><img src="{{ media_url($slide->image, asset('assets/img/demo/hero-2.jpg')) }}" alt="{{ str_replace('|', ' ', $slide->title) }}"></div>
+                                <span class="hero-leaf hero-leaf--r"></span>
+                                <span class="hero-leaf hero-leaf--l"></span>
                             </div>
                         </div>
                     </div>
-                </div>
-            @endforelse
+                @empty
+                    <div class="swiper-slide">
+                        <div class="hero-slide">
+                            <div class="hero-slide__content">
+                                <h1 class="hero-slide__title"><span class="line"><span>{{ setting('site_title', 'طاهورنیان') }}</span></span></h1>
+                                <p class="hero-slide__desc">{{ setting('site_tagline') }}</p>
+                            </div>
+                            <div class="hero-slide__media"><span class="hero-diamond"></span><div class="hero-arch"><img src="{{ asset('assets/img/demo/hero-2.jpg') }}" alt=""></div></div>
+                        </div>
+                    </div>
+                @endforelse
+            </div>
         </div>
     </div>
 
     <div class="hero-ui">
-        <div class="container" style="display:flex;justify-content:space-between;align-items:center;gap:20px">
-            <div class="hero-counter">
-                <span class="hero-counter__current">{{ fa_num('01') }}</span>
-                <span class="hero-counter__bar"><span></span></span>
-                <span class="hero-counter__total">{{ fa_num(str_pad(max(1, $slides->count()), 2, '0', STR_PAD_LEFT)) }}</span>
-            </div>
-            @if ($slides->count() > 1)
-                <div class="hero-nav">
-                    <button class="hero-prev" type="button" aria-label="اسلاید قبلی" data-magnetic=".3"><i class="ri-arrow-right-line"></i></button>
-                    <button class="hero-next" type="button" aria-label="اسلاید بعدی" data-magnetic=".3"><i class="ri-arrow-left-line"></i></button>
-                </div>
-            @endif
-        </div>
-    </div>
-
-    @include('partials.social', ['class' => 'hero-social'])
-
-    <a href="#about" class="scroll-down" aria-label="اسکرول به پایین">
-        <span class="scroll-down__mouse"></span>
-        <span>اسکرول کنید</span>
-    </a>
-</section>
-
-{{-- ============ نوار متحرک ============ --}}
-@php $marquee = array_filter(array_map('trim', explode(',', str_replace('،', ',', setting('marquee_text', 'طراحی, ساخت, اجرا'))))); @endphp
-<div class="marquee" data-marquee="60">
-    <div class="marquee__track">
-        <div class="marquee__group">
-            @foreach ($marquee as $word)
-                <span class="marquee__item">{{ $word }} <i class="ri-asterisk"></i></span>
-            @endforeach
-        </div>
-    </div>
-</div>
-
-{{-- ============ درباره ما ============ --}}
-<section class="section" id="about">
-    <div class="container about-grid">
-        <div class="about-media">
-            <span class="about-media__line" aria-hidden="true"></span>
-            <div class="img-reveal about-media__main" data-img-reveal="up">
-                <img src="{{ media_url(setting('about_image'), asset('assets/img/demo/about-1.jpg')) }}" alt="{{ setting('about_title') }}" loading="lazy">
-            </div>
-            <div class="img-reveal about-media__second" data-img-reveal="right" data-parallax=".15">
-                <img src="{{ media_url(setting('about_image_2'), asset('assets/img/demo/about-2.jpg')) }}" alt="" loading="lazy">
-            </div>
-            <div class="about-media__badge" data-reveal="scale">
-                <svg viewBox="0 0 160 160" aria-hidden="true">
-                    <defs><path id="circlePath" d="M80,80 m-62,0 a62,62 0 1,1 124,0 a62,62 0 1,1 -124,0"/></defs>
-                    <text><textPath href="#circlePath">• کیفیت • تعهد • نوآوری • اعتماد • تجربه </textPath></text>
-                </svg>
-                <div class="about-media__badge-core">
-                    <div><strong>{{ fa_num(setting('experience_years', 20)) }}</strong><span>سال تجربه</span></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="about-text">
-            <span class="eyebrow">{{ setting('about_subtitle', 'درباره ما') }}</span>
-            <h2 class="section-title" data-split>{{ setting('about_title') }}</h2>
-            <p data-highlight>{{ setting('about_text') }}</p>
-            @php $features = array_filter(array_map('trim', preg_split('/\r?\n/', (string) setting('about_features')))); @endphp
-            @if ($features)
-                <ul class="check-list" data-stagger=".08">
-                    @foreach ($features as $feature)
-                        <li><i class="ri-check-line"></i>{{ $feature }}</li>
+        <div class="container">
+            <div class="hero-controls">
+                <div class="hero-dots">
+                    @foreach ($slides as $i => $slide)
+                        <button type="button" class="{{ $i === 0 ? 'is-active' : '' }}" data-slide="{{ $i }}" aria-label="اسلاید {{ fa_num($i + 1) }}"></button>
                     @endforeach
-                </ul>
-            @endif
-            <div class="about-sign" data-reveal>
-                <a href="{{ route('about') }}" class="btn" data-magnetic=".2"><span>بیشتر درباره ما</span><i class="ri-arrow-left-up-line"></i></a>
-                @if (setting('ceo_name'))
-                    <div class="about-sign__person">
-                        <strong>{{ setting('ceo_name') }}</strong>
-                        <span>بنیان‌گذار و مدیرعامل</span>
+                </div>
+                @if ($slides->count() > 1)
+                    <div class="hero-nav">
+                        <button class="hero-prev" type="button" aria-label="قبلی"><i class="ri-arrow-right-line"></i></button>
+                        <button class="hero-next" type="button" aria-label="بعدی"><i class="ri-arrow-left-line"></i></button>
                     </div>
                 @endif
-                @if (setting('ceo_signature'))
-                    <img src="{{ media_url(setting('ceo_signature')) }}" alt="امضا">
-                @endif
             </div>
+            <a href="#services" class="scroll-down"><span class="scroll-down__mouse"></span> اسکرول کنید</a>
         </div>
     </div>
 </section>
 
-{{-- ============ آمار ============ --}}
 @include('partials.stats')
 
 {{-- ============ خدمات ============ --}}
 @if ($services->count())
-<section class="section section--dark2">
+<section class="section" id="services">
     <div class="container">
-        <div class="section-head">
-            <div class="section-head__text">
-                <span class="eyebrow">خدمات ما</span>
-                <h2 class="section-title" data-split>راهکارهای <em>جامع</em> برای هر پروژه ساختمانی</h2>
-            </div>
-            <a href="{{ route('services.index') }}" class="btn btn--outline" data-reveal><span>همه خدمات</span><i class="ri-arrow-left-up-line"></i></a>
-        </div>
-        <div class="services-grid" data-stagger=".1">
-            @foreach ($services as $i => $service)
-                @include('partials.service-card', ['service' => $service, 'index' => $i])
+        @include('partials.hang-head', ['title' => 'خدمات', 'en' => 'Services', 'icon' => 'ri-building-3-line'])
+        <div class="services-grid" data-stagger=".12">
+            @foreach ($services as $service)
+                @include('partials.service-card', ['service' => $service])
             @endforeach
         </div>
     </div>
 </section>
 @endif
 
-{{-- ============ پروژه‌های منتخب (اسکرول افقی) ============ --}}
+{{-- ============ پروژه‌ها ============ --}}
 @if ($projects->count())
 <section class="projects-h">
-    <div class="container projects-h__head">
-        <div class="section-head">
-            <div class="section-head__text">
-                <span class="eyebrow">نمونه کارها</span>
-                <h2 class="section-title" data-split>پروژه‌های <em>شاخص</em> ما</h2>
-            </div>
-            <p class="muted" style="max-width:420px" data-reveal>هر پروژه، داستانی از خلاقیت، دقت و تعهد است. برای مشاهده بیشتر اسکرول کنید.</p>
-        </div>
+    <div class="container">
+        @include('partials.sec-head', ['title' => 'پروژه ها', 'en' => 'Projects', 'icon' => 'ri-hammer-line', 'button' => ['همه پروژه ها', route('projects.index')]])
     </div>
     <div class="projects-h__track">
         @foreach ($projects as $project)
@@ -179,54 +117,40 @@
 </section>
 @endif
 
-{{-- ============ مراحل کار ============ --}}
-@include('partials.process', ['class' => 'section--dark2'])
+{{-- ============ تایم‌لاین ============ --}}
+@include('partials.timeline')
 
-{{-- ============ ویدیو ============ --}}
-<section class="video-band">
-    <div class="video-band__bg" data-parallax=".3" style="background-image:url('{{ media_url(setting('video_cover'), asset('assets/img/demo/video.jpg')) }}')"></div>
-    <div class="video-band__content">
-        @if (setting('video_url'))
-            <a href="#" class="play-btn" data-video="{{ setting('video_url') }}" data-magnetic=".5" aria-label="پخش ویدیو"><i class="ri-play-fill"></i></a>
-        @else
-            <a href="{{ route('projects.index') }}" class="play-btn" data-magnetic=".5" aria-label="مشاهده پروژه‌ها"><i class="ri-building-2-line"></i></a>
-        @endif
-        <h2 data-split>{{ setting('video_title', 'ساختن با عشق و دقت') }}</h2>
-    </div>
-</section>
-
-<div style="overflow:hidden;padding:20px 0">
-    <div class="marquee marquee--tilt" data-marquee="45" data-marquee-reverse>
-        <div class="marquee__track">
-            <div class="marquee__group">
-                @foreach ($marquee as $word)
-                    <span class="marquee__item">{{ $word }} <i class="ri-star-s-fill"></i></span>
-                @endforeach
-            </div>
+{{-- ============ محصولات ============ --}}
+@if ($products->count())
+<section class="section">
+    <div class="container">
+        @include('partials.sec-head', ['title' => 'محصولات', 'en' => 'Products', 'icon' => 'ri-shopping-bag-3-fill', 'button' => ['همه محصولات', route('shop.index')]])
+        <div class="products-grid" data-stagger=".1">
+            @foreach ($products as $product)
+                @include('partials.product-card', ['product' => $product])
+            @endforeach
         </div>
     </div>
-</div>
+</section>
+@endif
 
-{{-- ============ نظرات ============ --}}
-@include('partials.testimonials')
+{{-- ============ کاتالوگ و مشاوره ============ --}}
+@include('partials.promo')
+
+{{-- ============ همکاران ============ --}}
+@include('partials.partners')
 
 {{-- ============ تیم ============ --}}
 @include('partials.team')
 
-{{-- ============ سوالات ============ --}}
-@include('partials.faq', ['class' => 'section--dark2'])
+{{-- ============ نظرات ============ --}}
+@include('partials.testimonials')
 
 {{-- ============ مقالات ============ --}}
 @if ($posts->count())
-<section class="section">
+<section class="section" style="padding-top:0">
     <div class="container">
-        <div class="section-head">
-            <div class="section-head__text">
-                <span class="eyebrow">مجله ساختمان</span>
-                <h2 class="section-title" data-split>آخرین <em>مقالات</em> و اخبار</h2>
-            </div>
-            <a href="{{ route('blog.index') }}" class="btn btn--outline" data-reveal><span>همه مقالات</span><i class="ri-arrow-left-up-line"></i></a>
-        </div>
+        @include('partials.sec-head', ['title' => 'مجله ساختمان', 'en' => 'Blog', 'icon' => 'ri-article-line', 'button' => ['همه مقالات', route('blog.index')]])
         <div class="posts-grid" data-stagger=".12">
             @foreach ($posts as $post)
                 @include('partials.post-card', ['post' => $post])
@@ -236,7 +160,7 @@
 </section>
 @endif
 
-@include('partials.partners')
+@include('partials.faq', ['class' => ''])
 @include('partials.cta')
 
 @endsection
