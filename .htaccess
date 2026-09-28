@@ -1,0 +1,9 @@
+# برای هاست‌های اشتراکی که امکان تغییر Document Root به پوشه public را ندارند
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(\.env|composer\.(json|lock)|artisan|storage|vendor|database|app|config|routes|resources|bootstrap)(/.*)?$ - [F,L]
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>

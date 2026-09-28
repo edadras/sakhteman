@@ -1,0 +1,15 @@
+<?php
+
+namespace App\Models;
+
+use App\Models\Concerns\Publishable;
+use Illuminate\Database\Eloquent\Model;
+
+class Stat extends Model
+{
+    use Publishable;
+
+    protected $guarded = ['id'];
+
+    protected $casts = ['is_active' => 'boolean', 'value' => 'integer'];
+}
