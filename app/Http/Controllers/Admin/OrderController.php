@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Support\Activity;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -38,13 +39,16 @@ class OrderController extends Controller
             'admin_note' => ['nullable', 'string', 'max:2000'],
         ]);
 
+        $before = $order->status;
         $order->update($data);
+        Activity::log('update', 'orders', 'سفارش '.$order->code.($before !== $order->status ? ' — وضعیت: '.(Order::STATUSES[$order->status] ?? $order->status) : ''));
 
         return back()->with('success', 'سفارش به‌روزرسانی شد.');
     }
 
     public function destroy(Order $order)
     {
+        Activity::log('delete', 'orders', 'سفارش '.$order->code);
         $order->delete();
 
         return redirect()->route('admin.orders.index')->with('success', 'سفارش حذف شد.');

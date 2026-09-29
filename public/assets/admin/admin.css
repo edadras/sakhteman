@@ -338,3 +338,56 @@ select.form-control { cursor: pointer; }
 .kv { display: grid; grid-template-columns: 140px 1fr; gap: 10px 16px; }
 .kv dt { color: var(--a-muted); }
 .kv dd { margin: 0; font-weight: 600; }
+
+/* ---------- کاربران مدیر، نقش‌ها و گزارش فعالیت ---------- */
+.d-block { display: block; }
+.table tr.is-muted td { opacity: .55; }
+.user-cell { display: flex; align-items: center; gap: 12px; }
+.user-cell .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--a-primary-soft); color: var(--a-primary-2); display: grid; place-items: center; font-weight: 800; flex-shrink: 0; }
+.user-cell strong { display: flex; align-items: center; gap: 6px; }
+.user-cell small { color: var(--a-muted); font-size: 12px; }
+
+.role-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+.role-card { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.role-card.is-super { border-color: rgba(245, 158, 11, .45); background: linear-gradient(160deg, rgba(245, 158, 11, .08), transparent 60%), var(--a-surface); }
+.role-card__head { display: flex; gap: 12px; align-items: center; }
+.role-card__head h3 { margin: 0; font-size: 16px; }
+.role-card__head small { color: var(--a-muted); }
+.role-card__icon { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; font-size: 22px; background: var(--a-primary-soft); color: var(--a-primary-2); flex-shrink: 0; }
+.role-card.is-super .role-card__icon { background: rgba(245, 158, 11, .15); color: var(--a-amber); }
+.role-card__meter { height: 6px; border-radius: 6px; background: var(--a-surface-2); overflow: hidden; }
+.role-card__meter span { display: block; height: 100%; border-radius: 6px; background: var(--a-primary); }
+.role-card.is-super .role-card__meter span { background: var(--a-amber); }
+.role-card__meta { display: flex; justify-content: space-between; color: var(--a-muted); font-size: 13px; }
+.role-card__meta i { margin-left: 4px; }
+.role-card__actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+
+.perm-group + .perm-group { border-top: 1px solid var(--a-border); }
+.perm-group__head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 16px 22px 10px; flex-wrap: wrap; }
+.perm-table th, .perm-table td { text-align: center; }
+.perm-table th:first-child, .perm-table td:first-child { text-align: right; white-space: nowrap; }
+.perm-table td:first-child i { color: var(--a-muted); margin-left: 6px; }
+.perm-check { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: var(--a-muted); }
+.perm-check input { width: 18px; height: 18px; accent-color: var(--a-primary); cursor: pointer; }
+.perm-check input:disabled { cursor: not-allowed; opacity: .35; }
+.perm-super { display: flex; gap: 16px; align-items: flex-start; padding: 22px; margin-top: 18px; border-color: rgba(245, 158, 11, .45); }
+.perm-super > i { font-size: 32px; color: var(--a-amber); }
+.perm-super p { margin: 6px 0 0; color: var(--a-muted); }
+form[data-perm-form] > .card + .card { margin-top: 18px; }
+
+.activity-list { display: flex; flex-direction: column; }
+.activity-item { display: flex; gap: 14px; align-items: flex-start; padding: 14px 22px; border-bottom: 1px solid var(--a-border); }
+.activity-item__icon { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; font-size: 18px; background: var(--a-surface-2); flex-shrink: 0; }
+.activity-item__icon.c-muted { color: var(--a-muted); }
+.activity-item__body { flex: 1; min-width: 0; }
+.activity-item__body > div { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.activity-item__body p { margin: 4px 0 0; color: var(--a-muted); font-size: 13px; overflow-wrap: anywhere; }
+.activity-item__meta { text-align: left; font-size: 13px; white-space: nowrap; }
+.activity-item__meta small { display: block; color: var(--a-muted); font-size: 11px; }
+@media (max-width: 640px) {
+    .activity-item { flex-wrap: wrap; padding: 12px 16px; }
+    .activity-item__meta { width: 100%; text-align: right; padding-right: 52px; }
+}
+.a-user__role { display: block; font-size: 11px; color: var(--a-muted); font-weight: 500; line-height: 1.2; }
+.profile-role { display: flex; align-items: center; gap: 14px; padding: 16px 20px; margin-bottom: 18px; } .profile-role strong { display: block; } .profile-role small { color: var(--a-muted); }
+.grid-2 > :only-child { grid-column: 1 / -1; }

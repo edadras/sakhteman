@@ -3,12 +3,19 @@
 @section('title', $def['label'])
 
 @section('content')
+@php
+    $canCreate = auth()->user()->hasPermission($def['key'].'.create');
+    $canEdit = auth()->user()->hasPermission($def['key'].'.edit');
+    $canDelete = auth()->user()->hasPermission($def['key'].'.delete');
+@endphp
 <div class="page-head">
     <div>
         <h1><i class="{{ $def['icon'] }}"></i>{{ $def['label'] }}</h1>
         <p>{{ fa_num($items->total()) }} مورد ثبت شده</p>
     </div>
-    <a href="{{ route('admin.resources.create', $def['key']) }}" class="btn btn-primary"><i class="ri-add-line"></i>افزودن {{ $def['singular'] }}</a>
+    @if ($canCreate)
+        <a href="{{ route('admin.resources.create', $def['key']) }}" class="btn btn-primary"><i class="ri-add-line"></i>افزودن {{ $def['singular'] }}</a>
+    @endif
 </div>
 
 <div class="card">
@@ -36,12 +43,14 @@
             @endif
         </form>
 
+        @if ($canDelete)
         <form id="bulkForm" action="{{ route('admin.resources.bulk-destroy', $def['key']) }}" method="POST" data-confirm="موارد انتخاب شده حذف شوند؟">
             @csrf
             <div id="bulkBar" hidden>
                 <button class="btn btn-danger btn-sm" type="submit"><i class="ri-delete-bin-6-line"></i>حذف <span class="bulk-count">۰</span> مورد</button>
             </div>
         </form>
+        @endif
     </div>
 
     @if ($items->count())
@@ -49,7 +58,7 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th style="width:36px"><input type="checkbox" id="checkAll" aria-label="انتخاب همه"></th>
+                        @if ($canDelete)<th style="width:36px"><input type="checkbox" id="checkAll" aria-label="انتخاب همه"></th>@endif
                         @foreach ($def['columns'] as $col)
                             <th>{{ $col['label'] }}</th>
                         @endforeach
@@ -59,7 +68,7 @@
                 <tbody>
                     @foreach ($items as $item)
                         <tr>
-                            <td><input type="checkbox" class="row-check" value="{{ $item->id }}" aria-label="انتخاب"></td>
+                            @if ($canDelete)<td><input type="checkbox" class="row-check" value="{{ $item->id }}" aria-label="انتخاب"></td>@endif
                             @foreach ($def['columns'] as $name => $col)
                                 @php $value = data_get($item, $name); $type = $col['type'] ?? 'text'; @endphp
                                 <td @class(['title-cell' => $loop->index === 0 && $type === 'text' || $name === 'title' || $name === 'name' || $name === 'question'])>
@@ -71,6 +80,10 @@
                                             <span class="icon-cell"><i class="{{ $value ?: 'ri-question-line' }}"></i></span>
                                             @break
                                         @case('toggle')
+                                            @unless ($canEdit)
+                                                <span class="badge {{ $value ? 'badge-success' : 'badge-muted' }}">{{ $value ? 'فعال' : 'غیرفعال' }}</span>
+                                                @break
+                                            @endunless
                                             <form class="toggle-form" action="{{ route('admin.resources.toggle', [$def['key'], $item->id, $name]) }}" method="POST">
                                                 @csrf @method('PATCH')
                                                 <button type="submit" class="badge toggle-badge {{ $value ? 'badge-success' : 'badge-muted' }}" title="کلیک برای تغییر">
@@ -100,11 +113,15 @@
                                     @if (in_array($def['key'], ['services', 'projects', 'posts', 'products']) && $item->slug)
                                         <a class="btn btn-light btn-sm btn-icon" href="{{ $item->url }}" target="_blank" title="مشاهده در سایت"><i class="ri-eye-line"></i></a>
                                     @endif
-                                    <a class="btn btn-light btn-sm" href="{{ route('admin.resources.edit', [$def['key'], $item->id]) }}"><i class="ri-edit-line"></i>ویرایش</a>
+                                    @if ($canEdit)
+                                        <a class="btn btn-light btn-sm" href="{{ route('admin.resources.edit', [$def['key'], $item->id]) }}"><i class="ri-edit-line"></i>ویرایش</a>
+                                    @endif
+                                    @if ($canDelete)
                                     <form action="{{ route('admin.resources.destroy', [$def['key'], $item->id]) }}" method="POST" data-confirm="«{{ \Illuminate\Support\Str::limit(strip_tags((string) ($item->title ?? $item->name ?? $item->question)), 40) }}» حذف شود؟">
                                         @csrf @method('DELETE')
                                         <button class="btn btn-danger btn-sm btn-icon" type="submit" title="حذف"><i class="ri-delete-bin-6-line"></i></button>
                                     </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -117,7 +134,7 @@
         <div class="empty">
             <i class="{{ $def['icon'] }}"></i>
             <p>موردی یافت نشد.</p>
-            <a href="{{ route('admin.resources.create', $def['key']) }}" class="btn btn-primary"><i class="ri-add-line"></i>افزودن اولین {{ $def['singular'] }}</a>
+            @if ($canCreate)<a href="{{ route('admin.resources.create', $def['key']) }}" class="btn btn-primary"><i class="ri-add-line"></i>افزودن اولین {{ $def['singular'] }}</a>@endif
         </div>
     @endif
 </div>

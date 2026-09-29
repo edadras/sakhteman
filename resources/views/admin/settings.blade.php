@@ -37,7 +37,11 @@
             @endforeach
         </div>
         <div class="form-actions">
+            @can('settings.edit')
             <button type="submit" class="btn btn-primary"><i class="ri-save-3-line"></i>ذخیره تنظیمات</button>
+            @else
+            <span class="text-muted"><i class="ri-lock-line"></i> فقط اجازه مشاهده تنظیمات را دارید.</span>
+            @endcan
             <a href="{{ route('home') }}" target="_blank" class="btn btn-light"><i class="ri-eye-line"></i>مشاهده سایت</a>
         </div>
     </div>

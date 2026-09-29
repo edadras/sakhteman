@@ -25,27 +25,46 @@
         </a>
         <nav class="a-nav">
             <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"><i class="ri-dashboard-3-line"></i>داشبورد</a>
+            @can('messages.view')
             <a href="{{ route('admin.messages.index') }}" class="{{ request()->routeIs('admin.messages.*') ? 'active' : '' }}">
                 <i class="ri-mail-line"></i>پیام‌ها و درخواست‌ها
                 @if ($unreadCount)<span class="badge badge-danger">{{ fa_num($unreadCount) }}</span>@endif
             </a>
-
+            @endcan
+            @can('orders.view')
             <a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
                 <i class="ri-shopping-cart-2-line"></i>سفارش‌ها
                 @if ($pendingOrders)<span class="badge badge-danger">{{ fa_num($pendingOrders) }}</span>@endif
             </a>
+            @endcan
+            @can('customers.view')
             <a href="{{ route('admin.customers.index') }}" class="{{ request()->routeIs('admin.customers.*') ? 'active' : '' }}"><i class="ri-group-line"></i>مشتریان</a>
+            @endcan
 
             @foreach (\App\Admin\Resources::grouped() as $group => $items)
-                <div class="a-nav__group">{{ $group }}</div>
-                @foreach ($items as $key => $def)
-                    <a href="{{ route('admin.resources.index', $key) }}" class="{{ $currentResource === $key ? 'active' : '' }}"><i class="{{ $def['icon'] }}"></i>{{ $def['label'] }}</a>
-                @endforeach
+                @php $visible = collect($items)->filter(fn ($d, $k) => auth()->user()->hasPermission($k.'.view')); @endphp
+                @if ($visible->isNotEmpty())
+                    <div class="a-nav__group">{{ $group }}</div>
+                    @foreach ($visible as $key => $def)
+                        <a href="{{ route('admin.resources.index', $key) }}" class="{{ $currentResource === $key ? 'active' : '' }}"><i class="{{ $def['icon'] }}"></i>{{ $def['label'] }}</a>
+                    @endforeach
+                @endif
             @endforeach
 
-            <div class="a-nav__group">تنظیمات</div>
+            <div class="a-nav__group">تنظیمات و مدیریت</div>
+            @can('settings.view')
             <a href="{{ route('admin.settings.edit') }}" class="{{ request()->routeIs('admin.settings.*') ? 'active' : '' }}"><i class="ri-settings-4-line"></i>تنظیمات سایت</a>
-            <a href="{{ route('admin.profile.edit') }}" class="{{ request()->routeIs('admin.profile.*') ? 'active' : '' }}"><i class="ri-user-settings-line"></i>حساب کاربری</a>
+            @endcan
+            @can('users.view')
+            <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}"><i class="ri-admin-line"></i>کاربران مدیر</a>
+            @endcan
+            @can('roles.view')
+            <a href="{{ route('admin.roles.index') }}" class="{{ request()->routeIs('admin.roles.*') ? 'active' : '' }}"><i class="ri-shield-keyhole-line"></i>نقش‌ها و دسترسی‌ها</a>
+            @endcan
+            @can('activity.view')
+            <a href="{{ route('admin.activity.index') }}" class="{{ request()->routeIs('admin.activity.*') ? 'active' : '' }}"><i class="ri-history-line"></i>گزارش فعالیت‌ها</a>
+            @endcan
+            <a href="{{ route('admin.profile.edit') }}" class="{{ request()->routeIs('admin.profile.*') ? 'active' : '' }}"><i class="ri-user-settings-line"></i>حساب کاربری من</a>
         </nav>
         <div class="a-sidebar__foot">
             <a href="{{ route('home') }}" target="_blank"><i class="ri-external-link-line"></i>مشاهده سایت</a>
@@ -58,20 +77,22 @@
             <button class="icon-btn a-burger" id="aBurger" type="button" aria-label="منو"><i class="ri-menu-3-line"></i></button>
             <div class="a-topbar__title">@yield('title', 'داشبورد')</div>
             <div class="a-topbar__actions">
+                @can('messages.view')
                 <a href="{{ route('admin.messages.index', ['status' => 'unread']) }}" class="icon-btn" title="پیام‌های جدید">
                     <i class="ri-notification-3-line"></i>
                     @if ($unreadCount)<span class="dot"></span>@endif
                 </a>
+                @endcan
                 <button class="icon-btn" id="themeToggle" type="button" title="حالت تیره / روشن"><i class="ri-moon-line"></i></button>
                 <div class="a-user">
                     <button class="a-user__btn" type="button">
                         <span class="a-user__avatar">{{ mb_substr(auth()->user()->name, 0, 1) }}</span>
-                        <span>{{ auth()->user()->name }}</span>
+                        <span>{{ auth()->user()->name }}<small class="a-user__role">{{ auth()->user()->role?->name }}</small></span>
                         <i class="ri-arrow-down-s-line"></i>
                     </button>
                     <div class="a-user__menu">
                         <a href="{{ route('admin.profile.edit') }}"><i class="ri-user-line"></i>حساب کاربری</a>
-                        <a href="{{ route('admin.settings.edit') }}"><i class="ri-settings-3-line"></i>تنظیمات</a>
+                        @can('settings.view')<a href="{{ route('admin.settings.edit') }}"><i class="ri-settings-3-line"></i>تنظیمات</a>@endcan
                         <form action="{{ route('admin.logout') }}" method="POST">
                             @csrf
                             <button type="submit" style="color:var(--a-danger)"><i class="ri-logout-box-r-line"></i>خروج</button>

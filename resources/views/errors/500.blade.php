@@ -1,0 +1,5 @@
+@extends('errors.minimal')
+@section('title', 'خطای سرور')
+@section('code', '۵۰۰')
+@section('heading', 'مشکلی پیش آمده است')
+@section('message', 'خطایی در سرور رخ داد. لطفا چند لحظه دیگر دوباره تلاش کنید. اگر مشکل ادامه داشت با ما تماس بگیرید.')

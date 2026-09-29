@@ -10,6 +10,18 @@
     </div>
 </div>
 
+@php $me = auth()->user(); @endphp
+<div class="card profile-role" style="max-width:820px">
+    <span class="role-card__icon"><i class="{{ $me->role?->is_super ? 'ri-vip-crown-2-line' : 'ri-shield-user-line' }}"></i></span>
+    <div>
+        <strong>نقش شما: {{ $me->role?->name ?? 'بدون نقش' }}</strong>
+        <small>
+            {{ $me->role?->is_super ? 'دسترسی کامل به همه بخش‌ها' : fa_num(count($me->role?->permissions ?? [])).' دسترسی' }}
+            @if ($me->last_login_at) — آخرین ورود: {{ jdate($me->last_login_at, 'j F Y، H:i') }}@endif
+        </small>
+    </div>
+</div>
+
 <form class="card" method="POST" action="{{ route('admin.profile.update') }}" data-once style="max-width:820px">
     @csrf @method('PUT')
     <div class="card__head"><h2 class="card__title"><i class="ri-profile-line"></i>اطلاعات پایه</h2></div>

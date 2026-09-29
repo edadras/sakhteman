@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Support\Activity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -37,6 +38,7 @@ class ProfileController extends Controller
             $user->password = Hash::make($data['password']);
         }
         $user->save();
+        Activity::log('update', 'profile', $user->name.(! empty($data['password']) ? ' — تغییر رمز عبور' : ''));
 
         return back()->with('success', 'پروفایل با موفقیت به‌روزرسانی شد.');
     }

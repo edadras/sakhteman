@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Support\Activity;
 use App\Models\Message;
 use Illuminate\Http\Request;
 
@@ -36,6 +37,7 @@ class MessageController extends Controller
 
     public function destroy(Message $message)
     {
+        Activity::log('delete', 'messages', 'پیام '.$message->name.($message->subject ? ' — '.$message->subject : ''));
         $message->delete();
 
         return redirect()->route('admin.messages.index')->with('success', 'پیام حذف شد.');

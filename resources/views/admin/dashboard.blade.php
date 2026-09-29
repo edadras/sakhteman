@@ -9,11 +9,12 @@
         <p>امروز {{ jdate(now(), 'l j F Y') }} — خلاصه وضعیت سایت را در ادامه می‌بینید.</p>
     </div>
     <div class="toolbar">
-        <a href="{{ route('admin.resources.create', 'projects') }}" class="btn btn-primary"><i class="ri-add-line"></i>پروژه جدید</a>
-        <a href="{{ route('admin.resources.create', 'posts') }}" class="btn btn-light"><i class="ri-quill-pen-line"></i>مقاله جدید</a>
+        @can('projects.create')<a href="{{ route('admin.resources.create', 'projects') }}" class="btn btn-primary"><i class="ri-add-line"></i>پروژه جدید</a>@endcan
+        @can('posts.create')<a href="{{ route('admin.resources.create', 'posts') }}" class="btn btn-light"><i class="ri-quill-pen-line"></i>مقاله جدید</a>@endcan
     </div>
 </div>
 
+@if (count($cards))
 <div class="stat-cards">
     @foreach ($cards as $card)
         <a href="{{ $card['route'] }}" class="card stat-card c-{{ $card['color'] }}">
@@ -25,8 +26,10 @@
         </a>
     @endforeach
 </div>
+@endif
 
 <div class="grid-2">
+    @can('messages.view')
     <div class="card">
         <div class="card__head">
             <h2 class="card__title"><i class="ri-line-chart-line"></i>پیام‌های دریافتی ۱۴ روز اخیر</h2>
@@ -34,22 +37,30 @@
         </div>
         <div class="card__body"><canvas id="msgChart" height="120"></canvas></div>
     </div>
+    @endcan
     <div class="card">
         <div class="card__head"><h2 class="card__title"><i class="ri-flashlight-line"></i>دسترسی سریع</h2></div>
         <div class="card__body">
             <div class="quick-links">
-                <a href="{{ route('admin.resources.index', 'slides') }}"><i class="ri-slideshow-3-line"></i>اسلایدر</a>
-                <a href="{{ route('admin.resources.index', 'services') }}"><i class="ri-tools-line"></i>خدمات</a>
-                <a href="{{ route('admin.resources.index', 'team') }}"><i class="ri-team-line"></i>تیم ({{ fa_num($extra['team']) }})</a>
-                <a href="{{ route('admin.resources.index', 'testimonials') }}"><i class="ri-chat-quote-line"></i>نظرات ({{ fa_num($extra['testimonials']) }})</a>
-                <a href="{{ route('admin.settings.edit') }}#contact"><i class="ri-phone-line"></i>اطلاعات تماس</a>
-                <a href="{{ route('admin.settings.edit') }}#home"><i class="ri-home-5-line"></i>محتوای صفحه اصلی</a>
+                @can('projects.view')<a href="{{ route('admin.resources.index', 'projects') }}"><i class="ri-building-4-line"></i>پروژه‌ها</a>@endcan
+                @can('posts.view')<a href="{{ route('admin.resources.index', 'posts') }}"><i class="ri-article-line"></i>مقالات</a>@endcan
+                @can('products.view')<a href="{{ route('admin.resources.index', 'products') }}"><i class="ri-store-2-line"></i>محصولات</a>@endcan
+                @can('orders.view')<a href="{{ route('admin.orders.index') }}"><i class="ri-shopping-cart-2-line"></i>سفارش‌ها</a>@endcan
+                @can('slides.view')<a href="{{ route('admin.resources.index', 'slides') }}"><i class="ri-slideshow-3-line"></i>اسلایدر</a>@endcan
+                @can('services.view')<a href="{{ route('admin.resources.index', 'services') }}"><i class="ri-tools-line"></i>خدمات</a>@endcan
+                @can('team.view')<a href="{{ route('admin.resources.index', 'team') }}"><i class="ri-team-line"></i>تیم ({{ fa_num($extra['team']) }})</a>@endcan
+                @can('testimonials.view')<a href="{{ route('admin.resources.index', 'testimonials') }}"><i class="ri-chat-quote-line"></i>نظرات ({{ fa_num($extra['testimonials']) }})</a>@endcan
+                @can('settings.view')<a href="{{ route('admin.settings.edit') }}#contact"><i class="ri-phone-line"></i>اطلاعات تماس</a>
+                <a href="{{ route('admin.settings.edit') }}#home"><i class="ri-home-5-line"></i>محتوای صفحه اصلی</a>@endcan
+                @can('users.view')<a href="{{ route('admin.users.index') }}"><i class="ri-admin-line"></i>کاربران مدیر</a>@endcan
+                <a href="{{ route('admin.profile.edit') }}"><i class="ri-user-settings-line"></i>حساب کاربری من</a>
             </div>
         </div>
     </div>
 </div>
 
 <div class="grid-2">
+    @can('messages.view')
     <div class="card">
         <div class="card__head">
             <h2 class="card__title"><i class="ri-mail-line"></i>آخرین پیام‌ها</h2>
@@ -68,11 +79,13 @@
             <div class="empty"><i class="ri-inbox-line"></i>هنوز پیامی دریافت نشده است.</div>
         @endforelse
     </div>
+    @endcan
 
+    @can('posts.view')
     <div class="card">
         <div class="card__head"><h2 class="card__title"><i class="ri-fire-line"></i>پربازدیدترین مقالات</h2></div>
         @forelse ($popularPosts as $post)
-            <a href="{{ route('admin.resources.edit', ['posts', $post->id]) }}" class="list-item">
+            <a href="{{ auth()->user()->hasPermission('posts.edit') ? route('admin.resources.edit', ['posts', $post->id]) : $post->url }}" class="list-item">
                 <img src="{{ media_url($post->cover) }}" alt="">
                 <div class="list-item__body">
                     <strong>{{ $post->title }}</strong>
@@ -83,8 +96,10 @@
             <div class="empty"><i class="ri-article-line"></i>مقاله‌ای وجود ندارد.</div>
         @endforelse
     </div>
+    @endcan
 </div>
 
+@can('projects.view')
 <div class="card">
     <div class="card__head">
         <h2 class="card__title"><i class="ri-building-4-line"></i>آخرین پروژه‌ها</h2>
@@ -101,7 +116,7 @@
                         <td>{{ $project->category?->name ?? '—' }}</td>
                         <td><span class="badge badge-primary">{{ $project->status_label }}</span></td>
                         <td>{{ jdate($project->created_at) }}</td>
-                        <td><div class="actions"><a class="btn btn-light btn-sm" href="{{ route('admin.resources.edit', ['projects', $project->id]) }}"><i class="ri-edit-line"></i>ویرایش</a></div></td>
+                        <td><div class="actions">@can('projects.edit')<a class="btn btn-light btn-sm" href="{{ route('admin.resources.edit', ['projects', $project->id]) }}"><i class="ri-edit-line"></i>ویرایش</a>@endcan</div></td>
                     </tr>
                 @empty
                     <tr><td colspan="6"><div class="empty">پروژه‌ای ثبت نشده است.</div></td></tr>
@@ -110,6 +125,7 @@
         </table>
     </div>
 </div>
+@endcan
 @endsection
 
 @push('scripts')

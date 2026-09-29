@@ -15,10 +15,12 @@
         @if ($message->email)
             <a href="mailto:{{ $message->email }}?subject={{ rawurlencode('پاسخ: '.($message->subject ?? '')) }}" class="btn btn-light"><i class="ri-reply-line"></i>پاسخ با ایمیل</a>
         @endif
+        @can('messages.delete')
         <form action="{{ route('admin.messages.destroy', $message) }}" method="POST" data-confirm="این پیام حذف شود؟">
             @csrf @method('DELETE')
             <button class="btn btn-danger" type="submit"><i class="ri-delete-bin-6-line"></i>حذف</button>
         </form>
+        @endcan
     </div>
 </div>
 

@@ -14,12 +14,15 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $cards = [
-            ['label' => 'پروژه‌ها', 'value' => Project::count(), 'icon' => 'ri-building-4-line', 'color' => 'amber', 'route' => route('admin.resources.index', 'projects')],
-            ['label' => 'خدمات', 'value' => Service::count(), 'icon' => 'ri-tools-line', 'color' => 'blue', 'route' => route('admin.resources.index', 'services')],
-            ['label' => 'سفارش‌های جدید', 'value' => \App\Models\Order::where('status', 'pending')->count(), 'icon' => 'ri-shopping-cart-2-line', 'color' => 'green', 'route' => route('admin.orders.index', ['status' => 'pending'])],
-            ['label' => 'پیام‌های جدید', 'value' => Message::where('is_read', false)->count(), 'icon' => 'ri-mail-unread-line', 'color' => 'rose', 'route' => route('admin.messages.index')],
-        ];
+        $user = request()->user();
+        $cards = collect([
+            ['perm' => 'projects.view', 'label' => 'پروژه‌ها', 'value' => fn () => Project::count(), 'icon' => 'ri-building-4-line', 'color' => 'amber', 'route' => route('admin.resources.index', 'projects')],
+            ['perm' => 'services.view', 'label' => 'خدمات', 'value' => fn () => Service::count(), 'icon' => 'ri-tools-line', 'color' => 'blue', 'route' => route('admin.resources.index', 'services')],
+            ['perm' => 'orders.view', 'label' => 'سفارش‌های جدید', 'value' => fn () => \App\Models\Order::where('status', 'pending')->count(), 'icon' => 'ri-shopping-cart-2-line', 'color' => 'green', 'route' => route('admin.orders.index', ['status' => 'pending'])],
+            ['perm' => 'messages.view', 'label' => 'پیام‌های جدید', 'value' => fn () => Message::where('is_read', false)->count(), 'icon' => 'ri-mail-unread-line', 'color' => 'rose', 'route' => route('admin.messages.index')],
+            ['perm' => 'posts.view', 'label' => 'مقالات', 'value' => fn () => Post::count(), 'icon' => 'ri-article-line', 'color' => 'blue', 'route' => route('admin.resources.index', 'posts')],
+            ['perm' => 'products.view', 'label' => 'محصولات', 'value' => fn () => \App\Models\Product::count(), 'icon' => 'ri-store-2-line', 'color' => 'amber', 'route' => route('admin.resources.index', 'products')],
+        ])->filter(fn ($c) => $user->hasPermission($c['perm']))->take(4)->map(fn ($c) => ['value' => ($c['value'])()] + $c)->values()->all();
 
         // نمودار پیام‌های ۱۴ روز اخیر
         $days = collect(range(13, 0))->map(fn ($i) => now()->subDays($i)->startOfDay());

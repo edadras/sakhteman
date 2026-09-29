@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Support\Activity;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -27,6 +28,7 @@ class CustomerController extends Controller
     public function destroy(User $user)
     {
         abort_if($user->is_admin, 403);
+        Activity::log('delete', 'customers', $user->name.($user->mobile ? ' ('.$user->mobile.')' : ''));
         $user->delete();
 
         return back()->with('success', 'کاربر حذف شد.');

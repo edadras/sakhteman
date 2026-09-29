@@ -46,10 +46,12 @@
                             <td>
                                 <div class="actions">
                                     <a class="btn btn-light btn-sm" href="{{ route('admin.messages.show', $message) }}"><i class="ri-eye-line"></i>مشاهده</a>
+                                    @can('messages.delete')
                                     <form action="{{ route('admin.messages.destroy', $message) }}" method="POST" data-confirm="این پیام حذف شود؟">
                                         @csrf @method('DELETE')
                                         <button class="btn btn-danger btn-sm btn-icon" type="submit"><i class="ri-delete-bin-6-line"></i></button>
                                     </form>
+                                    @endcan
                                 </div>
                             </td>
                         </tr>

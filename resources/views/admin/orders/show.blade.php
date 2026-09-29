@@ -10,10 +10,12 @@
     </div>
     <div class="toolbar">
         <a href="tel:{{ $order->mobile }}" class="btn btn-primary"><i class="ri-phone-line"></i>تماس با مشتری</a>
+        @can('orders.delete')
         <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" data-confirm="این سفارش حذف شود؟">
             @csrf @method('DELETE')
             <button class="btn btn-danger" type="submit"><i class="ri-delete-bin-6-line"></i>حذف</button>
         </form>
+        @endcan
     </div>
 </div>
 
@@ -77,7 +79,7 @@
                     <textarea class="form-control" id="admin_note" name="admin_note" rows="3">{{ old('admin_note', $order->admin_note) }}</textarea>
                 </div>
             </div>
-            <div class="form-actions"><button class="btn btn-primary" type="submit"><i class="ri-save-3-line"></i>ذخیره</button></div>
+            @can('orders.edit')<div class="form-actions"><button class="btn btn-primary" type="submit"><i class="ri-save-3-line"></i>ذخیره</button></div>@else<div class="form-actions"><span class="text-muted"><i class="ri-lock-line"></i> اجازه تغییر وضعیت سفارش را ندارید.</span></div>@endcan
         </form>
     </div>
 </div>

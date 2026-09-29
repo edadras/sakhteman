@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Admin\Resources;
 use App\Http\Controllers\Controller;
+use App\Support\Activity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -11,10 +12,11 @@ use Illuminate\Support\Str;
 
 class ResourceController extends Controller
 {
-    protected function definition(string $resource): array
+    protected function definition(string $resource, string $action = 'view'): array
     {
         $def = Resources::find($resource);
         abort_if(! $def, 404);
+        abort_unless(request()->user()->hasPermission($resource.'.'.$action), 403);
 
         foreach ($def['fields'] as $name => $field) {
             if (isset($field['options']) && $field['options'] instanceof \Closure) {
@@ -23,6 +25,14 @@ class ResourceController extends Controller
         }
 
         return $def;
+    }
+
+    /**
+     * عنوان خوانای یک رکورد برای گزارش فعالیت
+     */
+    protected function label(Model $item): string
+    {
+        return (string) ($item->title ?? $item->name ?? $item->question ?? $item->label ?? '#'.$item->getKey());
     }
 
     protected function find(array $def, int|string $id): Model
@@ -63,7 +73,7 @@ class ResourceController extends Controller
 
     public function create(string $resource)
     {
-        $def = $this->definition($resource);
+        $def = $this->definition($resource, 'create');
         $item = new $def['model'];
 
         foreach ($def['fields'] as $name => $field) {
@@ -77,17 +87,18 @@ class ResourceController extends Controller
 
     public function store(Request $request, string $resource)
     {
-        $def = $this->definition($resource);
+        $def = $this->definition($resource, 'create');
         $item = new $def['model'];
 
         $item->fill($this->payload($request, $def, $item))->save();
+        Activity::log('create', $def['key'], $this->label($item));
 
         return $this->redirectAfterSave($request, $def, $item, $def['singular'].' با موفقیت اضافه شد.');
     }
 
     public function edit(string $resource, int $id)
     {
-        $def = $this->definition($resource);
+        $def = $this->definition($resource, 'edit');
         $item = $this->find($def, $id);
 
         return view('admin.resources.form', compact('def', 'item'));
@@ -95,40 +106,47 @@ class ResourceController extends Controller
 
     public function update(Request $request, string $resource, int $id)
     {
-        $def = $this->definition($resource);
+        $def = $this->definition($resource, 'edit');
         $item = $this->find($def, $id);
 
         $item->fill($this->payload($request, $def, $item))->save();
+        Activity::log('update', $def['key'], $this->label($item));
 
         return $this->redirectAfterSave($request, $def, $item, 'تغییرات با موفقیت ذخیره شد.');
     }
 
     public function destroy(string $resource, int $id)
     {
-        $def = $this->definition($resource);
-        $this->deleteItem($def, $this->find($def, $id));
+        $def = $this->definition($resource, 'delete');
+        $item = $this->find($def, $id);
+        Activity::log('delete', $def['key'], $this->label($item));
+        $this->deleteItem($def, $item);
 
         return back()->with('success', $def['singular'].' حذف شد.');
     }
 
     public function bulkDestroy(Request $request, string $resource)
     {
-        $def = $this->definition($resource);
+        $def = $this->definition($resource, 'delete');
         $ids = array_filter((array) $request->input('ids'), 'is_numeric');
 
-        $def['model']::whereIn('id', $ids)->get()->each(fn ($item) => $this->deleteItem($def, $item));
+        $def['model']::whereIn('id', $ids)->get()->each(function ($item) use ($def) {
+            Activity::log('delete', $def['key'], $this->label($item));
+            $this->deleteItem($def, $item);
+        });
 
         return back()->with('success', fa_num(count($ids)).' مورد حذف شد.');
     }
 
     public function toggle(string $resource, int $id, string $field)
     {
-        $def = $this->definition($resource);
+        $def = $this->definition($resource, 'edit');
         abort_unless(($def['fields'][$field]['type'] ?? null) === 'toggle', 404);
 
         $item = $this->find($def, $id);
         $item->{$field} = ! $item->{$field};
         $item->save();
+        Activity::log('update', $def['key'], $this->label($item).' — '.($def['fields'][$field]['label'] ?? $field).': '.($item->{$field} ? 'روشن' : 'خاموش'));
 
         if (request()->expectsJson()) {
             return response()->json(['value' => (bool) $item->{$field}]);

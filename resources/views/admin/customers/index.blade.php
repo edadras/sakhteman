@@ -32,10 +32,12 @@
                             <td>
                                 <div class="actions">
                                     @if ($customer->orders_count)<a href="{{ route('admin.orders.index', ['q' => $customer->mobile]) }}" class="btn btn-light btn-sm"><i class="ri-shopping-cart-2-line"></i>سفارش‌ها</a>@endif
+                                    @can('customers.delete')
                                     <form action="{{ route('admin.customers.destroy', $customer) }}" method="POST" data-confirm="حساب «{{ $customer->name }}» حذف شود؟">
                                         @csrf @method('DELETE')
                                         <button class="btn btn-danger btn-sm btn-icon" type="submit"><i class="ri-delete-bin-6-line"></i></button>
                                     </form>
+                                    @endcan
                                 </div>
                             </td>
                         </tr>
